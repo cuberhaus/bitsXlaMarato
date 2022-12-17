@@ -2,7 +2,27 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 import cv2
 from PIL import Image, ImageTk
-# import MASKRCNN.inference as inf
+from MASKRCNN.inference import *
+
+def inference():
+    Vid2Frame('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', '601_S1.avi')
+    fotos = glob('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg')
+    print(fotos)
+
+    for i, foto in enumerate(fotos):
+        # set to evaluation mode
+        # model = torch.load('pedestrians.pt')
+        model = torch.load('marato.pt')
+        model.eval()
+        # CLASS_NAMES = ['__background__', 'Ganchito']
+        CLASS_NAMES = ['__background__', '']
+        device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        model.to(device)
+
+        foto = segment_instance(foto, confidence=0.90)
+        cv2.imwrite('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/' + str(i) + '.jpg', foto)
+
+    Frame2Vid('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/')
 
 
 class VideoViewer:
@@ -73,23 +93,24 @@ def load_video():
     video_viewer.show_frame()
 
 
-# Create the root window
-root = tk.Tk()
+if __name__ == '__main__':
+    # Create the root window
+    root = tk.Tk()
 
-root.title("Image Viewer")
+    root.title("Image Viewer")
 
-# root.geometry("600x550")
+    # root.geometry("600x550")
 
-# Style the buttons
-style = ttk.Style()
-style.configure('My.TButton', foreground='blue')
+    # Style the buttons
+    style = ttk.Style()
+    style.configure('My.TButton', foreground='blue')
 
-# Create the video viewer
-video_viewer = VideoViewer(root)
+    # Create the video viewer
+    video_viewer = VideoViewer(root)
 
-# Create the load video button
-load_video_button = ttk.Button(root, text="Load Video", style='My.TButton', command=load_video)
-load_video_button.grid(row=2, column=1)
+    # Create the load video button
+    load_video_button = ttk.Button(root, text="Load Video", style='My.TButton', command=load_video)
+    load_video_button.grid(row=2, column=1)
 
-# Run the main loop
-root.mainloop()
+    # Run the main loop
+    root.mainloop()
