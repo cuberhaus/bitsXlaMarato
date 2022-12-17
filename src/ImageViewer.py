@@ -75,7 +75,7 @@ root = tk.Tk()
 
 root.title("Image Viewer")
 
-root.geometry("600x550")
+#root.geometry("600x550")
 
 # Style the buttons
 style = ttk.Style()
