@@ -58,21 +58,21 @@ def get_prediction(img_path, confidence, model):
     img = transform(img)
 
     img = img.to(device)
-
     pred = model([img])
-
     pred_score = list(pred[0]['scores'].detach().cpu().numpy())
     try:
         pred_t = [pred_score.index(x) for x in pred_score if x > confidence][-1]
     except:
         return numpy.array([]), numpy.array([]), numpy.array([])
     masks = (pred[0]['masks'] > 0.5).squeeze().detach().cpu().numpy()
-    # print(pred[0]['labels'].numpy().max())
     pred_class = [CLASS_NAMES[i] for i in list(pred[0]['labels'].cpu().numpy())]
     pred_boxes = [[(i[0], i[1]), (i[2], i[3])] for i in list(pred[0]['boxes'].detach().cpu().numpy())]
     masks = masks[:pred_t + 1]
     pred_boxes = pred_boxes[:pred_t + 1]
     pred_class = pred_class[:pred_t + 1]
+    if masks.shape != (1, 296, 472):
+        print('Hay un fallo raro')
+        return numpy.array([]), numpy.array([]), numpy.array([])
     return masks, pred_boxes, pred_class
 
 
@@ -94,6 +94,7 @@ def segment_instance(img_path, model, confidence=0.5, rect_th=2, text_size=2, te
     masks, boxes, pred_cls = get_prediction(img_path, confidence, model)
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    rgb_mask = None
     for i in range(len(masks)):
         rgb_mask = get_coloured_mask(masks[i])
         img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
@@ -104,7 +105,7 @@ def segment_instance(img_path, model, confidence=0.5, rect_th=2, text_size=2, te
     # plt.xticks([])
     # plt.yticks([])
     # plt.show()
-    return img
+    return img, rgb_mask
 
 
 # Program To Read video
