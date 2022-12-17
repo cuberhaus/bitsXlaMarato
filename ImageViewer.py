@@ -61,7 +61,7 @@ class ImageViewer:
 root = tk.Tk()
 
 # Specify the folder path
-folder_path = "603_frames/S1"
+folder_path = "frames/603_frames/S1"
 
 # Create the image viewer
 image_viewer = ImageViewer(root, folder_path)
