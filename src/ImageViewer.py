@@ -3,12 +3,18 @@ from tkinter import filedialog, ttk
 import cv2
 from PIL import Image, ImageTk
 from MASKRCNN.inference import *
+import os
 
 
-def inference(path_folder='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', video='601_S1.avi',
+def inference(path_input='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', video='601_S1.avi',
               images_expression='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg',
               path_output='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/'):
-    Vid2Frame(path_folder, video)
+    try:
+        os.mkdir(path_output)
+    except OSError as error:
+        print(error)
+
+    Vid2Frame(path_input, video)
     fotos = glob(images_expression)
     print(fotos)
     for i, foto in enumerate(fotos):
@@ -75,11 +81,27 @@ class VideoViewer:
         self.image_label.image = image
 
 
+
+# Python get home directory using os module
+print(os.path.expanduser('~'))
+home = os.path.expanduser('~')
+
+
 def load_video():
     # Open a file open dialog to select the video file
     file_path = filedialog.askopenfilename()
     if not file_path:
         return
+
+    path_input = os.path.dirname(file_path)
+    video = os.path.basename(file_path)
+    video_no_ext = video.split('.')[0]
+
+    images_expression = path_input + "frames_" + video_no_ext + "*.jpg"
+    path_output = path_input + "/output_" + video_no_ext + "/"
+
+    inference(path_input=path_input, video=video, images_expression=images_expression,
+              path_output=path_output)
 
     # Load the video file
     video = cv2.VideoCapture(file_path)
