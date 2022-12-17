@@ -21,7 +21,7 @@ def inference(path_input, video, images_expression, path_output, path_model):
     for i, foto in enumerate(fotos):
         # set to evaluation mode
         CLASS_NAMES = ['__background__', '']
-        foto = segment_instance(foto, confidence=0.90)
+        foto = segment_instance(foto, model_aorta, confidence=0.90)
         cv2.imwrite(path_output + str(i) + '.jpg', foto)
     Frame2Vid('%s' % path_output)
 
@@ -108,14 +108,14 @@ def load_video():
               path_output=path_output,
               path_model=path_model)
 
-    # Load the video file
-    video = cv2.VideoCapture(file_path)
-
-    # Set the video for the video viewer
-    video_viewer.video = video
-
-    # Display the first frame
-    video_viewer.show_frame()
+    # # Load the video file
+    # video = cv2.VideoCapture(file_path)
+    #
+    # # Set the video for the video viewer
+    # video_viewer.video = video
+    #
+    # # Display the first frame
+    # video_viewer.show_frame()
 
 
 if __name__ == '__main__':
