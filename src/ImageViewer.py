@@ -4,25 +4,23 @@ import cv2
 from PIL import Image, ImageTk
 from MASKRCNN.inference import *
 
-def inference():
-    Vid2Frame('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', '601_S1.avi')
-    fotos = glob('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg')
-    print(fotos)
 
+def inference(path_folder='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', video='601_S1.avi',
+              images_expression='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg',
+              path_output='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/'):
+    Vid2Frame(path_folder, video)
+    fotos = glob(images_expression)
+    print(fotos)
     for i, foto in enumerate(fotos):
         # set to evaluation mode
-        # model = torch.load('pedestrians.pt')
         model = torch.load('marato.pt')
         model.eval()
-        # CLASS_NAMES = ['__background__', 'Ganchito']
         CLASS_NAMES = ['__background__', '']
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         model.to(device)
-
         foto = segment_instance(foto, confidence=0.90)
-        cv2.imwrite('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/' + str(i) + '.jpg', foto)
-
-    Frame2Vid('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/')
+        cv2.imwrite(path_output + str(i) + '.jpg', foto)
+    Frame2Vid('%s' % path_output)
 
 
 class VideoViewer:
