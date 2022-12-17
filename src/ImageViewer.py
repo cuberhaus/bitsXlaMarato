@@ -6,9 +6,7 @@ from MASKRCNN.inference import *
 import os
 
 
-def inference(path_input='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', video='601_S1.avi',
-              images_expression='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg',
-              path_output='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/', path_model='marato.pt'):
+def inference(path_input, video, images_expression, path_output, path_model):
     try:
         os.mkdir(path_output)
     except OSError as error:
@@ -17,13 +15,12 @@ def inference(path_input='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/'
     Vid2Frame(path_input, video)
     fotos = glob(images_expression)
     print(fotos)
+    model_aorta = torch.load('%s' % path_model)
+    model_aorta.eval()
+    model_aorta.to(device)
     for i, foto in enumerate(fotos):
         # set to evaluation mode
-        model = torch.load('%s' % path_model)
-        model.eval()
         CLASS_NAMES = ['__background__', '']
-        device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-        model.to(device)
         foto = segment_instance(foto, confidence=0.90)
         cv2.imwrite(path_output + str(i) + '.jpg', foto)
     Frame2Vid('%s' % path_output)
@@ -100,11 +97,12 @@ def load_video():
     # cwd = os.getcwd()
     script_path = os.path.realpath(os.path.dirname(__file__))
     path_model = script_path + '/../models/marato.pt'
-    print(path_input)
-    print(video)
-    print(video_no_ext)
-    print(images_expression)
-    print(path_output)
+    # print(path_input)
+    # print(video)
+    # print(video_no_ext)
+    # print(images_expression)
+    # print(path_output)
+    print(path_model)
 
     inference(path_input=path_input, video=video, images_expression=images_expression,
               path_output=path_output,
