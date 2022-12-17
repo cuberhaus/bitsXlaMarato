@@ -26,6 +26,7 @@ def get_coloured_mask(mask):
       method:
         - the masks of each predicted object is given random colour for visualization
     """
+    print(mask.shape)
     colours = [[0, 255, 0], [0, 0, 255], [255, 0, 0], [0, 255, 255], [255, 255, 0], [255, 0, 255], [80, 70, 180],
                [250, 80, 190], [245, 145, 50], [70, 150, 250], [50, 190, 190]]
     r = np.zeros_like(mask).astype(np.uint8)
@@ -33,7 +34,6 @@ def get_coloured_mask(mask):
     b = np.zeros_like(mask).astype(np.uint8)
     r[mask == 1], g[mask == 1], b[mask == 1] = colours[1]
     coloured_mask = np.stack([r, g, b], axis=2)
-    print(coloured_mask)
     return coloured_mask
 
 
@@ -59,6 +59,7 @@ def get_prediction(img_path, confidence):
     pred = model([img])
     pred_score = list(pred[0]['scores'].detach().cpu().numpy())
     try:
+        print('Hay soluciones')
         pred_t = [pred_score.index(x) for x in pred_score if x > confidence][-1]
     except:
         return numpy.array([]), numpy.array([]), numpy.array([])
@@ -197,6 +198,8 @@ if __name__ == '__main__':
 
     model = torch.load('./maratoNuevo.pt')
     model.eval()
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.to(device)
 
     for i, foto in enumerate(fotos):
         print(foto)
@@ -205,8 +208,6 @@ if __name__ == '__main__':
 
         # CLASS_NAMES = ['__background__', 'Ganchito']
         CLASS_NAMES = ['__background__', '']
-        device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-        model.to(device)
 
         foto = segment_instance(foto, confidence=0.90)
 
