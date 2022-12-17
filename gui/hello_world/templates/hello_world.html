@@ -1,29 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Visor de fotos</title>
-  <style>
-    body {
-      background-color: black;
-    }
+{% extends "base.html" %}
 
-    h1 {
-      color: white;
-      text-align: center;
-    }
-
-    .image-viewer {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 500px;
-    }
-  </style>
-</head>
-<body>
-  <h1>VISOR DE FOTOS</h1>
-  <div class="image-viewer">
-    <img src="/603_frames/S1/603_S1_25.jpg" alt="Image viewer">
-  </div>
-</body>
-</html>
+{% block page_content %}
+<h1>Hello, World!</h1>
+{% endblock %}
