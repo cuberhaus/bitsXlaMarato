@@ -26,16 +26,16 @@ class ImageViewer:
 
     # Create the previous image button
     self.previous_image_button = tk.Button(root, text="Previous Image", command=self.previous_image)
-    self.previous_image_button.pack()
+    self.previous_image_button.pack(side="left")
 
     # Create the next image button
     self.next_image_button = tk.Button(root, text="Next Image", command=self.next_image)
-    self.next_image_button.pack()
+    self.next_image_button.pack(side="right")
 
     # Bind the arrow keys to the image navigation functions
     self.root.bind("<Left>", self.previous_image)
     self.root.bind("<Right>", self.next_image)
-
+    root.title("Aorta finder")
     # Display the first image
     self.show_image()
 
@@ -61,7 +61,7 @@ class ImageViewer:
 root = tk.Tk()
 
 # Specify the folder path
-folder_path = "C:/Users/tonvi/PycharmProjects/bitsXlaMarato/603_frames/S1"
+folder_path = "603_frames/S1"
 
 # Create the image viewer
 image_viewer = ImageViewer(root, folder_path)
