@@ -8,7 +8,7 @@ import os
 
 def inference(path_input='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', video='601_S1.avi',
               images_expression='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg',
-              path_output='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/'):
+              path_output='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/', path_model='marato.pt'):
     try:
         os.mkdir(path_output)
     except OSError as error:
@@ -19,7 +19,7 @@ def inference(path_input='C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/'
     print(fotos)
     for i, foto in enumerate(fotos):
         # set to evaluation mode
-        model = torch.load('marato.pt')
+        model = torch.load('%s' % path_model)
         model.eval()
         CLASS_NAMES = ['__background__', '']
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -81,7 +81,6 @@ class VideoViewer:
         self.image_label.image = image
 
 
-
 # Python get home directory using os module
 print(os.path.expanduser('~'))
 home = os.path.expanduser('~')
@@ -96,12 +95,20 @@ def load_video():
     path_input = os.path.dirname(file_path)
     video = os.path.basename(file_path)
     video_no_ext = video.split('.')[0]
-
-    images_expression = path_input + "frames_" + video_no_ext + "*.jpg"
+    images_expression = path_input + "/frames_" + video_no_ext + "/" + "*.jpg"
     path_output = path_input + "/output_" + video_no_ext + "/"
+    # cwd = os.getcwd()
+    script_path = os.path.realpath(os.path.dirname(__file__))
+    path_model = script_path + '/../models/marato.pt'
+    print(path_input)
+    print(video)
+    print(video_no_ext)
+    print(images_expression)
+    print(path_output)
 
     inference(path_input=path_input, video=video, images_expression=images_expression,
-              path_output=path_output)
+              path_output=path_output,
+              path_model=path_model)
 
     # Load the video file
     video = cv2.VideoCapture(file_path)
