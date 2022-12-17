@@ -30,56 +30,58 @@ class VideoViewer:
         self.frame_index -= 1
 
         if self.frame_index < 0:
-          self.frame_index = 0
+            self.frame_index = 0
         self.show_frame()
 
     def next_frame(self, event=None):
-      self.frame_index += 1
-      if self.frame_index >= self.video.get(cv2.CAP_PROP_FRAME_COUNT):
-        self.frame_index = self.video.get(cv2.CAP_PROP_FRAME_COUNT) - 1
-      self.show_frame()
+        self.frame_index += 1
+        if self.frame_index >= self.video.get(cv2.CAP_PROP_FRAME_COUNT):
+            self.frame_index = self.video.get(cv2.CAP_PROP_FRAME_COUNT) - 1
+        self.show_frame()
 
     def show_frame(self):
-      # Set the frame index
-      self.video.set(cv2.CAP_PROP_POS_FRAMES, self.frame_index)
+        # Set the frame index
+        self.video.set(cv2.CAP_PROP_POS_FRAMES, self.frame_index)
 
-      # Read the frame
-      success, frame = self.video.read()
-      if not success:
-        return
+        # Read the frame
+        success, frame = self.video.read()
+        if not success:
+            return
 
-      # Convert the frame to a PIL image and display it in the label
-      frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-      image = Image.fromarray(frame)
-      image = ImageTk.PhotoImage(image)
-      self.image_label.configure(image=image)
-      self.image_label.image = image
+        # Convert the frame to a PIL image and display it in the label
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(frame)
+        image = ImageTk.PhotoImage(image)
+        self.image_label.configure(image=image)
+        self.image_label.image = image
+
 
 def load_video():
-  # Open a file open dialog to select the video file
-  file_path = filedialog.askopenfilename()
-  if not file_path:
-    return
+    # Open a file open dialog to select the video file
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+        return
 
-  # Load the video file
-  video = cv2.VideoCapture(file_path)
+    # Load the video file
+    video = cv2.VideoCapture(file_path)
 
-  # Set the video for the video viewer
-  video_viewer.video = video
+    # Set the video for the video viewer
+    video_viewer.video = video
 
-  # Display the first frame
-  video_viewer.show_frame()
+    # Display the first frame
+    video_viewer.show_frame()
+
 
 # Create the root window
 root = tk.Tk()
 
 root.title("Image Viewer")
 
-#root.geometry("600x550")
+# root.geometry("600x550")
 
 # Style the buttons
 style = ttk.Style()
-style.configure('My.TButton', foreground ='blue')
+style.configure('My.TButton', foreground='blue')
 
 # Create the video viewer
 video_viewer = VideoViewer(root)
