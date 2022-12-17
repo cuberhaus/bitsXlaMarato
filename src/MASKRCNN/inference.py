@@ -38,7 +38,7 @@ def get_coloured_mask(mask):
     return coloured_mask
 
 
-def get_prediction(img_path, confidence):
+def get_prediction(img_path, confidence, model):
     """
     get_prediction
       parameters:
@@ -57,7 +57,9 @@ def get_prediction(img_path, confidence):
     img = transform(img)
 
     img = img.to(device)
+
     pred = model([img])
+
     pred_score = list(pred[0]['scores'].detach().cpu().numpy())
     try:
         pred_t = [pred_score.index(x) for x in pred_score if x > confidence][-1]
@@ -73,7 +75,7 @@ def get_prediction(img_path, confidence):
     return masks, pred_boxes, pred_class
 
 
-def segment_instance(img_path, confidence=0.5, rect_th=2, text_size=2, text_th=2):
+def segment_instance(img_path, model, confidence=0.5, rect_th=2, text_size=2, text_th=2):
     """
     segment_instance
       parameters:
@@ -88,7 +90,7 @@ def segment_instance(img_path, confidence=0.5, rect_th=2, text_size=2, text_th=2
         - each mask is added to the image in the ration 1:0.8 with opencv
         - final output is displayed
     """
-    masks, boxes, pred_cls = get_prediction(img_path, confidence)
+    masks, boxes, pred_cls = get_prediction(img_path, confidence, model)
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     for i in range(len(masks)):
@@ -209,7 +211,7 @@ if __name__ == '__main__':
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         model.to(device)
 
-        foto = segment_instance(foto, confidence=0.90)
+        foto = segment_instance(foto, model, confidence=0.90)
 
         cv2.imwrite('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/' + str(i) + '.jpg', foto)
 
