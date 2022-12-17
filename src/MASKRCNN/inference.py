@@ -15,6 +15,7 @@ warnings.filterwarnings('ignore')
 # FOTO = 'Dataset/PNGImages/img3.png'
 FOTO = './MARATO/PNGImages/601_S2_40.jpg'
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+CLASS_NAMES = ['__background__', '']
 
 
 # https://haochen23.github.io/2020/06/fine-tune-mask-rcnn-pytorch.html#.YsxbR-xBxH5
@@ -180,6 +181,8 @@ def Frame2Vid(path):
 
     # Caracteríasticas video
     name_vid = ('_').join(frames[0].split('_')[0:2])
+    print(name_vid)
+    name_vid = name_vid.split('.')[0]
 
     height, width, layers = img_array[0].shape
     size = (width, height)
@@ -207,7 +210,6 @@ if __name__ == '__main__':
         # model = torch.load('pedestrians.pt')
 
         # CLASS_NAMES = ['__background__', 'Ganchito']
-        CLASS_NAMES = ['__background__', '']
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         model.to(device)
 
