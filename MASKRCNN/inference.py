@@ -185,8 +185,8 @@ def Frame2Vid(path):
 
 from glob import glob
 if __name__ == '__main__':
-    Vid2Frame('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', 'S2-603.avi')
-    fotos = glob('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_S2-603/*.jpg')
+    Vid2Frame('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', '601_S1.avi')
+    fotos = glob('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg')
     print(fotos)
 
     for i, foto in enumerate(fotos):
