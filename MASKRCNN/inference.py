@@ -12,9 +12,11 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-#FOTO = 'Dataset/PNGImages/img3.png'
+# FOTO = 'Dataset/PNGImages/img3.png'
 FOTO = './MARATO/PNGImages/601_S2_40.jpg'
-#https://haochen23.github.io/2020/06/fine-tune-mask-rcnn-pytorch.html#.YsxbR-xBxH5
+
+
+# https://haochen23.github.io/2020/06/fine-tune-mask-rcnn-pytorch.html#.YsxbR-xBxH5
 
 def get_coloured_mask(mask):
     """
@@ -31,7 +33,8 @@ def get_coloured_mask(mask):
     b = np.zeros_like(mask).astype(np.uint8)
     r[mask == 1], g[mask == 1], b[mask == 1] = colours[1]
     coloured_mask = np.stack([r, g, b], axis=2)
-    return np.stack([r, g, b], axis=2)
+    print(coloured_mask)
+    return coloured_mask
 
 
 def get_prediction(img_path, confidence):
@@ -90,13 +93,13 @@ def segment_instance(img_path, confidence=0.5, rect_th=2, text_size=2, text_th=2
     for i in range(len(masks)):
         rgb_mask = get_coloured_mask(masks[i])
         img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
-        #cv2.rectangle(img, boxes[i][0], boxes[i][1], color=(0, 255, 0), thickness=rect_th)
-        #cv2.putText(img, pred_cls[i], boxes[i][0], cv2.FONT_HERSHEY_SIMPLEX, text_size, (0, 255, 0), thickness=text_th)
-    #plt.figure(figsize=(20, 30))
-    #plt.imshow(img)
-    #plt.xticks([])
-    #plt.yticks([])
-    #plt.show()
+        # cv2.rectangle(img, boxes[i][0], boxes[i][1], color=(0, 255, 0), thickness=rect_th)
+        # cv2.putText(img, pred_cls[i], boxes[i][0], cv2.FONT_HERSHEY_SIMPLEX, text_size, (0, 255, 0), thickness=text_th)
+    # plt.figure(figsize=(20, 30))
+    # plt.imshow(img)
+    # plt.xticks([])
+    # plt.yticks([])
+    # plt.show()
     return img
 
 
@@ -150,6 +153,7 @@ def Vid2Frame(path, filename):
 
         success, image = vidObj.read()
 
+
 # Program To Read video
 # and Extract Frames
 
@@ -158,9 +162,9 @@ import matplotlib.pyplot as plt
 import os
 import shutil
 
+
 # Function to extract frames
 def Frame2Vid(path):
-
     frames = sorted(os.listdir(path))
     img_array = []
 
@@ -183,25 +187,29 @@ def Frame2Vid(path):
         out.write(img_array[i])
     out.release()
 
+
 from glob import glob
+
 if __name__ == '__main__':
     Vid2Frame('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/', '601_S1.avi')
     fotos = glob('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_601_S1/*.jpg')
     print(fotos)
 
-    for i, foto in enumerate(fotos):
+    model = torch.load('./maratoNuevo.pt')
+    model.eval()
 
+    for i, foto in enumerate(fotos):
+        print(foto)
         # set to evaluation mode
-        #model = torch.load('pedestrians.pt')
-        model = torch.load('marato.pt')
-        model.eval()
-        #CLASS_NAMES = ['__background__', 'Ganchito']
+        # model = torch.load('pedestrians.pt')
+
+        # CLASS_NAMES = ['__background__', 'Ganchito']
         CLASS_NAMES = ['__background__', '']
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         model.to(device)
 
         foto = segment_instance(foto, confidence=0.90)
-        cv2.imwrite('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/' + str(i) +'.jpg', foto)
+
+        cv2.imwrite('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/' + str(i) + '.jpg', foto)
 
     Frame2Vid('C:/Users/pable/Documents/GitHub/bitsXlaMarato/videos/frames_588_short2/')
-
