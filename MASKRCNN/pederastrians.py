@@ -142,7 +142,6 @@ def get_transform(train):
 
 
 if __name__ == '__main__':
-    print('Hola')
     # use our dataset and defined transformations
     dataset = PedestrianDataset(DATASET, get_transform(train=True))
     dataset_test = PedestrianDataset(DATASET, get_transform(train=False))
@@ -163,7 +162,6 @@ if __name__ == '__main__':
         collate_fn=utils.collate_fn)
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    print(device)
     # our dataset has two classes only - background and person
     num_classes = 2
 
