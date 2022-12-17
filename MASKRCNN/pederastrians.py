@@ -17,8 +17,8 @@ elif modelo == 1:
     MODELNAME = 'ganchitos.pt'
 else:
     DATASET = './MARATO'
-    SIZE = -40
-    MODELNAME = 'marato.pt'
+    SIZE = -50
+    MODELNAME = 'maratoNuevo.pt'
 
 
 # https://haochen23.github.io/2020/06/fine-tune-mask-rcnn-pytorch.html#.YsxbR-xBxH5
