@@ -55,7 +55,7 @@ ROOT_URLCONF = "gui.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["gui/templates/"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
