@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 import cv2
 from PIL import Image, ImageTk
-
+import MASKRCNN.inference as inf
 
 class VideoViewer:
     def __init__(self, root):
