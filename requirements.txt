@@ -1,2 +1,8 @@
 opencv_python
 pysimplegui
+
+future~=0.18.2
+Pillow~=9.3.0
+numpy==1.23.4
+matplotlib~=3.6.2
+opencv-python~=4.6.0.66
