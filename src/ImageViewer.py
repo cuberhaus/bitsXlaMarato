@@ -1,14 +1,24 @@
+import os
 import tkinter as tk
 from tkinter import filedialog, ttk
-import cv2
-from PIL import Image, ImageTk
+
+from PIL import ImageTk
+
 from MASKRCNN.inference import *
-import os
 
 
 def inference(path_input, video, images_expression, path_output, path_model):
+    path_mascara = path_output + 'mascara/'
+    print(path_mascara)
+    if os.path.exists(path_output):
+        shutil.rmtree(path_output)
+
     try:
         os.mkdir(path_output)
+    except OSError as error:
+        print(error)
+    try:
+        os.mkdir(path_mascara)
     except OSError as error:
         print(error)
 
@@ -21,8 +31,10 @@ def inference(path_input, video, images_expression, path_output, path_model):
     for i, foto in enumerate(fotos):
         # set to evaluation mode
         CLASS_NAMES = ['__background__', '']
-        foto = segment_instance(foto, model_aorta, confidence=0.90)
-        cv2.imwrite(path_output + str(i) + '.jpg', foto)
+        temporal, mascara = segment_instance(foto, model_aorta, confidence=0.90)
+        cv2.imwrite(path_output + str(i) + '.jpg', temporal)
+        if not mascara is None:
+            cv2.imwrite(path_mascara + str(i) + '.tiff', mascara)
     Frame2Vid('%s' % path_output)
 
 
@@ -96,7 +108,7 @@ def load_video():
     path_output = path_input + "/output_" + video_no_ext + "/"
     # cwd = os.getcwd()
     script_path = os.path.realpath(os.path.dirname(__file__))
-    path_model = script_path + '/../models/marato.pt'
+    path_model = script_path + '/../models/maratoNuevo.pt'
     # print(path_input)
     # print(video)
     # print(video_no_ext)
