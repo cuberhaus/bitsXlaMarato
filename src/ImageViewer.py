@@ -1,14 +1,24 @@
+import os
 import tkinter as tk
 from tkinter import filedialog, ttk
-import cv2
-from PIL import Image, ImageTk
+
+from PIL import ImageTk
+
 from MASKRCNN.inference import *
-import os
 
 
 def inference(path_input, video, images_expression, path_output, path_model):
+    path_mascara = path_output + 'mascara/'
+    print(path_mascara)
+    if os.path.exists(path_output):
+        shutil.rmtree(path_output)
+
     try:
         os.mkdir(path_output)
+    except OSError as error:
+        print(error)
+    try:
+        os.mkdir(path_mascara)
     except OSError as error:
         print(error)
 
@@ -21,8 +31,10 @@ def inference(path_input, video, images_expression, path_output, path_model):
     for i, foto in enumerate(fotos):
         # set to evaluation mode
         CLASS_NAMES = ['__background__', '']
-        foto = segment_instance(foto, model_aorta, confidence=0.90)
-        cv2.imwrite(path_output + str(i) + '.jpg', foto)
+        temporal, mascara = segment_instance(foto, model_aorta, confidence=0.90)
+        cv2.imwrite(path_output + str(i) + '.jpg', temporal)
+        if not mascara is None:
+            cv2.imwrite(path_mascara + str(i) + '.tiff', mascara)
     Frame2Vid('%s' % path_output)
 
 
@@ -96,7 +108,7 @@ def load_video():
     path_output = path_input + "/output_" + video_no_ext + "/"
     # cwd = os.getcwd()
     script_path = os.path.realpath(os.path.dirname(__file__))
-    path_model = script_path + '/../models/marato.pt'
+    path_model = script_path + '/../models/maratoNuevo.pt'
     # print(path_input)
     # print(video)
     # print(video_no_ext)
@@ -109,20 +121,29 @@ def load_video():
               path_model=path_model)
 
     # # Load the video file
-    # video = cv2.VideoCapture(file_path)
+    video = cv2.VideoCapture(path_output + '0.avi')
     #
     # # Set the video for the video viewer
-    # video_viewer.video = video
+    video_viewer.video = video
     #
     # # Display the first frame
-    # video_viewer.show_frame()
+    video_viewer.show_frame()
+
+def create_3d_model():
+
+    return
 
 
 if __name__ == '__main__':
     # Create the root window
     root = tk.Tk()
 
-    root.title("Image Viewer")
+    # Window title
+    root.title("Aorta Viewer")
+
+    # Window icon
+    # icon = tk.PhotoImage(file='logo.png')
+    # root.wm_iconphoto(True, icon)
 
     # root.geometry("600x550")
 
@@ -136,6 +157,9 @@ if __name__ == '__main__':
     # Create the load video button
     load_video_button = ttk.Button(root, text="Load Video", style='My.TButton', command=load_video)
     load_video_button.grid(row=2, column=1)
+
+    ThreeD_button = ttk.Button(root, text="3D", style='My.TButton', command=create_3d_model)
+    ThreeD_button.grid(row=3, column=1)
 
     # Run the main loop
     root.mainloop()
