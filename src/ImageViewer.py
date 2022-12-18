@@ -129,12 +129,21 @@ def load_video():
     # # Display the first frame
     # video_viewer.show_frame()
 
+def create_3d_model():
+
+    return
+
 
 if __name__ == '__main__':
     # Create the root window
     root = tk.Tk()
 
-    root.title("Image Viewer")
+    # Window title
+    root.title("Aorta Viewer")
+
+    # Window icon
+    icon = tk.PhotoImage(file='logo.png')
+    root.wm_iconphoto(True, icon)
 
     # root.geometry("600x550")
 
@@ -148,6 +157,9 @@ if __name__ == '__main__':
     # Create the load video button
     load_video_button = ttk.Button(root, text="Load Video", style='My.TButton', command=load_video)
     load_video_button.grid(row=2, column=1)
+
+    ThreeD_button = ttk.Button(root, text="3D", style='My.TButton', command=create_3d_model)
+    ThreeD_button.grid(row=3, column=1)
 
     # Run the main loop
     root.mainloop()
