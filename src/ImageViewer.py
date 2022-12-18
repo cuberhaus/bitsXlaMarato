@@ -210,8 +210,8 @@ if __name__ == '__main__':
     root.title("Aorta Viewer")
 
     # Window icon
-    # icon = tk.PhotoImage(file='logo.png')
-    # root.wm_iconphoto(True, icon)
+    icon = tk.PhotoImage(file='logo.png')
+    root.wm_iconphoto(True, icon)
 
     # root.geometry("600x550")
 
