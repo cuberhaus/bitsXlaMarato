@@ -1,7 +1,7 @@
 import cv2
 
 # Load the mask image
-image = cv2.imread('C:/Users/tonvi/PycharmProjects/bitsXlaMarato/videos/output_601_S1/mascara/32.tiff', cv2.IMREAD_GRAYSCALE)
+image = cv2.imread('C:/Users/tonvi/PycharmProjects/bitsXlaMarato/videos/output_601_S1/mascara/58.tiff', cv2.IMREAD_GRAYSCALE)
 
 # Convert the image to grayscale
 #gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
