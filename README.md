@@ -24,7 +24,13 @@ A lot of Python and how to use a AI. Before we did not know a lot about marking 
 ## What's next for Aneurism detection with MarkRCNN
 We are giving the challengers the trained model, which they can reuse. This would prove useful if they mark the frames of the ecographies, because even though we asked for help, they are professionals and can read an ecography proficiently.
 Also, we are giving them a GUI and all the scripts used for the application.
+
+
 ![32](https://user-images.githubusercontent.com/44567202/208294460-f8bd49dd-c2c4-4dbf-b316-3fedd989bd9b.jpg)
+
+
 ![photo1671360246](https://user-images.githubusercontent.com/44567202/208294473-3b2da637-5504-4750-8ea9-06e50e139eaa.jpeg)
+
+
 ![photo1671360243](https://user-images.githubusercontent.com/44567202/208294474-817252af-eeb3-499b-8ffa-e6333b68efe0.jpeg)
 
