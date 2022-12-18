@@ -1,7 +1,7 @@
 import cv2
 
 # Load the mask image
-mask = cv2.imread('C:/Users/tonvi/PycharmProjects/bitsXlaMarato/videos/mascara/30.tiff')
+mask = cv2.imread('C:/Users/tonvi/PycharmProjects/bitsXlaMarato/videos/output_601_S1/mascara/30.tiff')
 # Convert the image to grayscale
 gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
 # Threshold the image to create a binary image
