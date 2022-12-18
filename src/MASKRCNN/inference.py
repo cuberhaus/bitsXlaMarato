@@ -1,19 +1,13 @@
+import warnings
+
 import numpy
-from PIL import Image
-import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torchvision.transforms as T
-import torchvision
-import numpy as np
-
-import cv2
-import random
-import warnings
+from PIL import Image
 
 warnings.filterwarnings('ignore')
 
-# FOTO = 'Dataset/PNGImages/img3.png'
-FOTO = './MARATO/PNGImages/601_S2_40.jpg'
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 CLASS_NAMES = ['__background__', '']
 
@@ -35,7 +29,7 @@ def get_coloured_mask(mask):
     b = np.zeros_like(mask).astype(np.uint8)
     r[mask == 1], g[mask == 1], b[mask == 1] = colours[1]
     coloured_mask = np.stack([r, g, b], axis=2)
-    print(coloured_mask)
+    # print(coloured_mask)
     return coloured_mask
 
 
@@ -111,11 +105,6 @@ def segment_instance(img_path, model, confidence=0.5, rect_th=2, text_size=2, te
 # Program To Read video
 # and Extract Frames
 
-import cv2
-import matplotlib.pyplot as plt
-import os
-import shutil
-
 
 # Function to extract frames
 def Vid2Frame(path, filename):
@@ -131,8 +120,13 @@ def Vid2Frame(path, filename):
     # Path to video file
     vidObj = cv2.VideoCapture(path + filename)
 
-    n_frames = str(vidObj.get(cv2.CAP_PROP_FRAME_COUNT))
-    n_zeros = len(n_frames) - 2
+    # property_id = int(cv2.CAP_PROP_FRAME_COUNT)
+    # length = int(cv2.VideoCapture.get(vidObj, property_id))
+
+    n_frames = str(100) # this value is hardcoded
+    n_zeros = len(n_frames)
+    print(n_frames)
+    print(n_zeros)
 
     # Used as counter variable
     count = 0
@@ -151,7 +145,6 @@ def Vid2Frame(path, filename):
         num = ini_zeros + str(count)
 
         # Saves the frames with frame-count
-        # print(full_path + vid_name + "_" + num +".jpg", final_image)
         cv2.imwrite(full_path + vid_name + "_" + num + ".jpg", final_image)
 
         count += 1
@@ -163,7 +156,6 @@ def Vid2Frame(path, filename):
 # and Extract Frames
 
 import cv2
-import matplotlib.pyplot as plt
 import os
 import shutil
 
@@ -182,7 +174,6 @@ def Frame2Vid(path):
 
     # Caracteríasticas video
     name_vid = ('_').join(frames[0].split('_')[0:2])
-    print(name_vid)
     name_vid = name_vid.split('.')[0]
 
     height, width, layers = img_array[0].shape

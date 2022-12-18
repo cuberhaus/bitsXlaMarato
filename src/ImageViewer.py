@@ -1,28 +1,47 @@
+import os
 import tkinter as tk
 from tkinter import filedialog, ttk
-import cv2
-from PIL import Image, ImageTk
+
+from PIL import ImageTk
+
 from MASKRCNN.inference import *
-import os
 
 
 def inference(path_input, video, images_expression, path_output, path_model):
+    path_mascara = path_output + 'mascara/'
+    if os.path.exists(path_output):
+        shutil.rmtree(path_output)
+
     try:
         os.mkdir(path_output)
+    except OSError as error:
+        print(error)
+    try:
+        os.mkdir(path_mascara)
     except OSError as error:
         print(error)
 
     Vid2Frame(path_input, video)
     fotos = glob(images_expression)
-    print(fotos)
     model_aorta = torch.load('%s' % path_model)
     model_aorta.eval()
     model_aorta.to(device)
+
+    n_frames = str(len(fotos))
+    n_zeros = len(n_frames)
+    # Used as counter variable
+    count = 0
+
     for i, foto in enumerate(fotos):
+        ini_zeros = int(n_zeros - len(str(count))) * '0'
+        num = ini_zeros + str(count)
         # set to evaluation mode
         CLASS_NAMES = ['__background__', '']
-        foto = segment_instance(foto, model_aorta, confidence=0.90)
-        cv2.imwrite(path_output + str(i) + '.jpg', foto)
+        temporal, mascara = segment_instance(foto, model_aorta, confidence=0.90)
+        cv2.imwrite(path_output + str(num) + '.jpg', temporal)
+        if not mascara is None:
+            cv2.imwrite(path_mascara + str(num) + '.tiff', mascara)
+        count += 1
     Frame2Vid('%s' % path_output)
 
 
@@ -79,7 +98,7 @@ class VideoViewer:
 
 
 # Python get home directory using os module
-print(os.path.expanduser('~'))
+# print(os.path.expanduser('~'))
 home = os.path.expanduser('~')
 
 
@@ -96,26 +115,30 @@ def load_video():
     path_output = path_input + "/output_" + video_no_ext + "/"
     # cwd = os.getcwd()
     script_path = os.path.realpath(os.path.dirname(__file__))
-    path_model = script_path + '/../models/marato.pt'
+    path_model = script_path + '/../models/maratoNuevo.pt'
     # print(path_input)
     # print(video)
     # print(video_no_ext)
     # print(images_expression)
     # print(path_output)
-    print(path_model)
+    # print(path_model)
 
     inference(path_input=path_input, video=video, images_expression=images_expression,
               path_output=path_output,
               path_model=path_model)
-
+    video_l = glob(path_output + '*.avi')
+    if len(video_l) == 0:
+        print('No se ha podido generar el video')
+        return
+    path_video_out = video_l[0]
     # # Load the video file
-    # video = cv2.VideoCapture(file_path)
+    video = cv2.VideoCapture(path_video_out)
     #
     # # Set the video for the video viewer
-    # video_viewer.video = video
+    video_viewer.video = video
     #
     # # Display the first frame
-    # video_viewer.show_frame()
+    video_viewer.show_frame()
 
 def create_3d_model():
 
@@ -130,8 +153,8 @@ if __name__ == '__main__':
     root.title("Aorta Viewer")
 
     # Window icon
-    icon = tk.PhotoImage(file='logo.png')
-    root.wm_iconphoto(True, icon)
+    # icon = tk.PhotoImage(file='logo.png')
+    # root.wm_iconphoto(True, icon)
 
     # root.geometry("600x550")
 
