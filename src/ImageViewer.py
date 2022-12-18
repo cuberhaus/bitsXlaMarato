@@ -121,13 +121,13 @@ def load_video():
               path_model=path_model)
 
     # # Load the video file
-    # video = cv2.VideoCapture(file_path)
+    video = cv2.VideoCapture(path_output + '0.avi')
     #
     # # Set the video for the video viewer
-    # video_viewer.video = video
+    video_viewer.video = video
     #
     # # Display the first frame
-    # video_viewer.show_frame()
+    video_viewer.show_frame()
 
 def create_3d_model():
 
@@ -142,8 +142,8 @@ if __name__ == '__main__':
     root.title("Aorta Viewer")
 
     # Window icon
-    icon = tk.PhotoImage(file='logo.png')
-    root.wm_iconphoto(True, icon)
+    # icon = tk.PhotoImage(file='logo.png')
+    # root.wm_iconphoto(True, icon)
 
     # root.geometry("600x550")
 
