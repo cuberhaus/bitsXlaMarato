@@ -20,9 +20,6 @@ else:
     SIZE = -50
     MODELNAME = 'maratoNuevo.pt'
 
-
-# https://haochen23.github.io/2020/06/fine-tune-mask-rcnn-pytorch.html#.YsxbR-xBxH5
-
 class PedestrianDataset(torch.utils.data.Dataset):
     def __init__(self, root, transforms=None):
         self.root = root
