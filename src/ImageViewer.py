@@ -9,7 +9,6 @@ from MASKRCNN.inference import *
 
 def inference(path_input, video, images_expression, path_output, path_model):
     path_mascara = path_output + 'mascara/'
-    print(path_mascara)
     if os.path.exists(path_output):
         shutil.rmtree(path_output)
 
@@ -24,17 +23,25 @@ def inference(path_input, video, images_expression, path_output, path_model):
 
     Vid2Frame(path_input, video)
     fotos = glob(images_expression)
-    print(fotos)
     model_aorta = torch.load('%s' % path_model)
     model_aorta.eval()
     model_aorta.to(device)
+
+    n_frames = str(len(fotos))
+    n_zeros = len(n_frames)
+    # Used as counter variable
+    count = 0
+
     for i, foto in enumerate(fotos):
+        ini_zeros = int(n_zeros - len(str(count))) * '0'
+        num = ini_zeros + str(count)
         # set to evaluation mode
         CLASS_NAMES = ['__background__', '']
         temporal, mascara = segment_instance(foto, model_aorta, confidence=0.90)
-        cv2.imwrite(path_output + str(i) + '.jpg', temporal)
+        cv2.imwrite(path_output + str(num) + '.jpg', temporal)
         if not mascara is None:
-            cv2.imwrite(path_mascara + str(i) + '.tiff', mascara)
+            cv2.imwrite(path_mascara + str(num) + '.tiff', mascara)
+        count += 1
     Frame2Vid('%s' % path_output)
 
 
@@ -91,7 +98,7 @@ class VideoViewer:
 
 
 # Python get home directory using os module
-print(os.path.expanduser('~'))
+# print(os.path.expanduser('~'))
 home = os.path.expanduser('~')
 
 
@@ -114,14 +121,18 @@ def load_video():
     # print(video_no_ext)
     # print(images_expression)
     # print(path_output)
-    print(path_model)
+    # print(path_model)
 
     inference(path_input=path_input, video=video, images_expression=images_expression,
               path_output=path_output,
               path_model=path_model)
-
+    video_l = glob(path_output + '*.avi')
+    if len(video_l) == 0:
+        print('No se ha podido generar el video')
+        return
+    path_video_out = video_l[0]
     # # Load the video file
-    video = cv2.VideoCapture(path_output + '0.avi')
+    video = cv2.VideoCapture(path_video_out)
     #
     # # Set the video for the video viewer
     video_viewer.video = video
