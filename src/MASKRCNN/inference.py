@@ -1,19 +1,13 @@
+import warnings
+
 import numpy
-from PIL import Image
-import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torchvision.transforms as T
-import torchvision
-import numpy as np
-
-import cv2
-import random
-import warnings
+from PIL import Image
 
 warnings.filterwarnings('ignore')
 
-# FOTO = 'Dataset/PNGImages/img3.png'
-FOTO = './MARATO/PNGImages/601_S2_40.jpg'
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 CLASS_NAMES = ['__background__', '']
 
@@ -111,11 +105,6 @@ def segment_instance(img_path, model, confidence=0.5, rect_th=2, text_size=2, te
 # Program To Read video
 # and Extract Frames
 
-import cv2
-import matplotlib.pyplot as plt
-import os
-import shutil
-
 
 # Function to extract frames
 def Vid2Frame(path, filename):
@@ -163,7 +152,6 @@ def Vid2Frame(path, filename):
 # and Extract Frames
 
 import cv2
-import matplotlib.pyplot as plt
 import os
 import shutil
 
@@ -171,6 +159,7 @@ import shutil
 # Function to extract frames
 def Frame2Vid(path):
     frames = sorted(os.listdir(path))
+    print(frames)
     img_array = []
 
     # Leer imagenes
