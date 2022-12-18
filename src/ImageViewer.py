@@ -6,9 +6,43 @@ from PIL import ImageTk
 
 from MASKRCNN.inference import *
 
+import cv2
+import matplotlib.pyplot as plt
+import os
+import shutil
+import meshlib.mrmeshpy as mr
+import open3d as o3d
+
+
+# Function to extract frames
+def get3Dfigure(path):
+    settings = mr.LoadingTiffSettings()
+    # load images from specified directory
+    settings.dir = path
+    # specifiy size of 3D image element
+    settings.voxelSize = mr.Vector3f(1, 1, 1)
+    # create voxel object from the series of images
+    volume = mr.loadTiffDir(settings)
+    # define ISO value to build surface
+    iso = 127.0
+    # convert voxel object to mesh
+    mesh = mr.gridToMesh(volume.value(), iso)
+    # save mesh to .stl file
+    mr.saveMesh(mesh.value(), mr.Path(path + "mesh3D.stl"))
+
+
+def visualize(mesh):
+    vis = o3d.visualization.Visualizer()
+    vis.create_window()
+    vis.add_geometry(mesh)
+    vis.run()
+    vis.destroy_window()
+
 
 def inference(path_input, video, images_expression, path_output, path_model):
     path_mascara = path_output + 'mascara/'
+    global path_mask
+    path_mask = path_mascara
     if os.path.exists(path_output):
         shutil.rmtree(path_output)
 
@@ -115,7 +149,8 @@ def load_video():
     path_output = path_input + "/output_" + video_no_ext + "/"
     # cwd = os.getcwd()
     script_path = os.path.realpath(os.path.dirname(__file__))
-    path_model = script_path + '/../models/maratoNuevo.pt'
+    #path_model = script_path + '/../models/maratoNuevo.pt'
+    path_model = 'C:/Users/pable/Documents/GitHub/bitsXlaMarato/MASKRCNN/maratoNuevo.pt'
     # print(path_input)
     # print(video)
     # print(video_no_ext)
@@ -141,7 +176,29 @@ def load_video():
     video_viewer.show_frame()
 
 def create_3d_model():
+    print(path_mask)
+    fotos = glob(path_mask + "*.tiff")
+    print(fotos)
+    for foto in fotos:
+        img = Image.open(foto)
+        data = np.array(img)
+        binarizada = data[:, :, 0]
+        nueva = Image.fromarray(binarizada)
+        cv2.imwrite(foto, binarizada)
+    # dir donde estan las tiff
+    ruta = path_mask
+    try:
+        os.remove(ruta + 'mesh3D.stl')
+    except:
+        pass
+    print(ruta)
+    get3Dfigure(ruta)
 
+
+    mesh = o3d.io.read_triangle_mesh(ruta + 'mesh3D.stl')
+    mesh.paint_uniform_color([252 / 255, 3 / 255, 115 / 255])
+    mesh.compute_vertex_normals()
+    visualize(mesh)
     return
 
 
