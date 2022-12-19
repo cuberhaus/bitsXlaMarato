@@ -149,8 +149,8 @@ def load_video():
     path_output = path_input + "/output_" + video_no_ext + "/"
     # cwd = os.getcwd()
     script_path = os.path.realpath(os.path.dirname(__file__))
-    #path_model = script_path + '/../models/maratoNuevo.pt'
-    path_model = 'C:/Users/pable/Documents/GitHub/bitsXlaMarato/MASKRCNN/maratoNuevo.pt'
+    path_model = script_path + '/../models/maratoNuevo.pt'
+    # path_model = 'C:/Users/pable/Documents/GitHub/bitsXlaMarato/MASKRCNN/maratoNuevo.pt'
     # print(path_input)
     # print(video)
     # print(video_no_ext)

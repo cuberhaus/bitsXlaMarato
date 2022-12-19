@@ -2,3 +2,6 @@
 models/
 *.pyc
 *.ipynb_checkpoints
+*.tiff
+*.png
+*.stl

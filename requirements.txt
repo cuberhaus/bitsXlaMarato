@@ -1,6 +1,5 @@
 opencv_python
-pysimplegui
-
+open3d
 future~=0.18.2
 Pillow~=9.3.0
 numpy==1.23.4
@@ -8,3 +7,4 @@ matplotlib~=3.6.2
 opencv-python~=4.6.0.66
 torch~=1.13.0
 torchvision~=0.14.1
+meshlib~=0.0.34.78
