@@ -1,5 +1,6 @@
 # bitsXlaMarato
 By: Pol Casacuberta, Tatiana Meyer, Pablo Vega, Ton Vilà
+Devpost: https://devpost.com/software/aneurism-detection-with-markrcnn
 
 ## Inspiration
 We were very inclined to work in this project because we thought we could solve the problem presented with our knowledge. Also, we were very excited to put ourselves into learning some new technologies and experiencing a Hackathon.
