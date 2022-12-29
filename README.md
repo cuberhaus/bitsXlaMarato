@@ -10,7 +10,7 @@ This program converts an ecography into several frames to then detect the abdomi
 All of this is ready to be used by a GUI we built. The detected aorta can be seen in a red color and a 3D model is generated, which can be rotated as desired. Also, a video is generated with the marked aorta.
 
 ## How we built it
-We used the MaskRCNN Artificial Intelligence with some hand-made markups of some of the patients. This resulted in a trained model that we then applied to detect the aorta in other patients.
+We fine-tuned MaskRCNN with some hand-made markups of some of the patients. This resulted in a trained model that we then applied to detect the aorta in other patients.
 We then programmed a script to generate a 3D model of the aorta found in the pictures so we could see more clearly the aneurism in case it was present.
 
 ## Challenges we ran into
