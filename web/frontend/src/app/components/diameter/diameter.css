@@ -1,0 +1,134 @@
+.diameter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.measure-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.param-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.param-row label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.param-row input[type='number'] {
+  width: 120px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.frame-label {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.measure-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.measure-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.measure-btn:disabled {
+  opacity: 0.5;
+}
+
+.result-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.diameter-value {
+  font-family: var(--font-mono);
+  margin-bottom: 4px;
+}
+
+.diameter-value .big-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #4ecdc4;
+}
+
+.diameter-value.aneurysm .big-number {
+  color: #ff6b6b;
+}
+
+.diameter-value .unit {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.diameter-detail {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.diagnosis {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(78, 205, 196, 0.12);
+  color: #4ecdc4;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+.diagnosis.aneurysm {
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff6b6b;
+}
+
+.mask-preview {
+  position: relative;
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.mask-preview img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.overlay-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+}

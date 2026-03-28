@@ -1,0 +1,33 @@
+@if (totalFrames > 0) {
+  <div class="frame-viewer">
+    <div class="frame-display">
+      <img [src]="frameUrl" alt="Frame {{ currentFrame }}" />
+    </div>
+
+    <div class="controls">
+      <button class="nav-btn" (click)="prevFrame()" [disabled]="currentFrame === 0">&larr;</button>
+
+      <input
+        type="range"
+        class="frame-slider"
+        [min]="0"
+        [max]="totalFrames - 1"
+        [value]="currentFrame"
+        (input)="onSliderChange($event)"
+      />
+
+      <button class="nav-btn" (click)="nextFrame()" [disabled]="currentFrame >= totalFrames - 1">&rarr;</button>
+    </div>
+
+    <div class="frame-info">
+      <span class="frame-counter">Frame {{ currentFrame + 1 }} / {{ totalFrames }}</span>
+      <button class="toggle-btn" [class.active]="showOverlay" (click)="toggleOverlay()">
+        {{ showOverlay ? 'Showing Overlay' : 'Showing Original' }}
+      </button>
+    </div>
+  </div>
+} @else {
+  <div class="empty">
+    <p>No frames available. Upload and process a video first.</p>
+  </div>
+}

@@ -1,0 +1,45 @@
+<div class="upload-container">
+  <div
+    class="drop-zone"
+    [class.dragging]="dragging"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()"
+  >
+    <div class="drop-icon">&#x1F4F9;</div>
+    <p class="drop-text">Drop ecography video here or click to browse</p>
+    @if (selectedFile) {
+      <p class="drop-hint">{{ selectedFile.name }}</p>
+    }
+    <input
+      #fileInput
+      type="file"
+      accept="video/*,.avi,.mp4,.mkv"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+  </div>
+
+  <div class="params">
+    <div class="param-group">
+      <label>Confidence Threshold</label>
+      <input type="range" min="0.1" max="1" step="0.05" [(ngModel)]="confidence" />
+      <span class="param-value">{{ confidence }}</span>
+    </div>
+    <div class="param-group">
+      <label>
+        <input type="checkbox" [(ngModel)]="useCrop" />
+        Apply default crop (296x472)
+      </label>
+    </div>
+  </div>
+
+  <button
+    class="upload-btn"
+    [disabled]="!selectedFile || uploading"
+    (click)="upload()"
+  >
+    {{ uploading ? 'Uploading...' : 'Start Processing' }}
+  </button>
+</div>

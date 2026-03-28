@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+torch
+torchvision
+opencv-python
+meshlib
+Pillow
+numpy
+python-multipart

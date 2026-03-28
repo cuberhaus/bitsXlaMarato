@@ -1,0 +1,95 @@
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px;
+}
+
+.drop-zone {
+  width: 100%;
+  max-width: 500px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.drop-zone:hover,
+.drop-zone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.drop-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.drop-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.drop-hint {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.params {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.param-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.param-group label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.param-group input[type='range'] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.param-value {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  min-width: 36px;
+}
+
+.upload-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.upload-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

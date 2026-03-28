@@ -1,0 +1,53 @@
+<header class="topbar">
+  <div class="brand">
+    <h1>Aorta Viewer</h1>
+    <span class="subtitle">Ecography Segmentation + 3D</span>
+  </div>
+  <div class="status-info">
+    @if (serverStatus) {
+      <span class="server-badge" [class.gpu]="serverStatus.gpu_available">
+        {{ serverStatus.gpu_available ? serverStatus.gpu_name : 'CPU Mode' }}
+      </span>
+    }
+    @if (jobId) {
+      <button class="reset-btn" (click)="resetJob()">New Video</button>
+    }
+  </div>
+</header>
+
+<main class="main-content">
+  @if (!jobId) {
+    <app-upload (jobStarted)="onJobStarted($event)"></app-upload>
+  }
+
+  @if (jobId) {
+    <div class="workspace">
+      @if (processing) {
+        <app-job-status
+          [jobId]="jobId"
+          (completed)="onJobCompleted()"
+        ></app-job-status>
+      }
+
+      @if (!processing) {
+        <div class="tabs">
+          <button class="tab" [class.active]="activeTab === 'frames'" (click)="activeTab = 'frames'">Frames</button>
+          <button class="tab" [class.active]="activeTab === '3d'" (click)="activeTab = '3d'">3D Model</button>
+          <button class="tab" [class.active]="activeTab === 'measurement'" (click)="activeTab = 'measurement'">Measurement</button>
+        </div>
+
+        <div class="tab-content">
+          @if (activeTab === 'frames') {
+            <app-frame-viewer [jobId]="jobId" (frameSelected)="onFrameSelected($event)"></app-frame-viewer>
+          }
+          @if (activeTab === '3d') {
+            <app-three-viewer [jobId]="jobId"></app-three-viewer>
+          }
+          @if (activeTab === 'measurement') {
+            <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame"></app-diameter>
+          }
+        </div>
+      }
+    </div>
+  }
+</main>

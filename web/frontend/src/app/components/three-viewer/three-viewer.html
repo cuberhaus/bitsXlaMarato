@@ -1,0 +1,27 @@
+<div class="three-container">
+  <div class="toolbar">
+    <button
+      class="gen-btn"
+      (click)="generateMesh()"
+      [disabled]="loading || !jobId"
+    >
+      {{ loading ? 'Generating...' : (meshGenerated ? 'Regenerate 3D Mesh' : 'Generate 3D Mesh') }}
+    </button>
+    @if (meshGenerated) {
+      <span class="hint">Drag to rotate, scroll to zoom</span>
+    }
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas #canvas></canvas>
+    @if (loading) {
+      <div class="loading-overlay">
+        <span>Generating 3D mesh...</span>
+      </div>
+    }
+  </div>
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+</div>

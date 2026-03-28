@@ -1,0 +1,14 @@
+<div class="job-status" [class]="'state-' + status.state">
+  <div class="status-header">
+    <span class="state-badge">{{ stateLabel }}</span>
+    @if (status.total > 0) {
+      <span class="progress-text">{{ status.progress }} / {{ status.total }}</span>
+    }
+  </div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" [style.width.%]="progressPercent"></div>
+  </div>
+
+  <p class="status-message">{{ status.message }}</p>
+</div>

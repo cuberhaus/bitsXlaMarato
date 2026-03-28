@@ -1,0 +1,56 @@
+<div class="diameter-panel">
+  <div class="measure-controls">
+    <div class="param-row">
+      <label>Pixel Scale (cm/px)</label>
+      <input type="number" step="0.001" [(ngModel)]="pixelScale" />
+    </div>
+    <div class="param-row">
+      <span class="frame-label">Frame {{ frameIndex }}</span>
+      <button class="measure-btn" (click)="measure()" [disabled]="loading || !jobId">
+        {{ loading ? 'Measuring...' : 'Measure Diameter' }}
+      </button>
+    </div>
+  </div>
+
+  @if (result) {
+    <div class="result-card">
+      <div class="diameter-value" [class.aneurysm]="isAneurysm">
+        <span class="big-number">{{ result.diameter_cm }}</span>
+        <span class="unit">cm</span>
+      </div>
+      <p class="diameter-detail">{{ result.diameter_px }} px at scale {{ result.pixel_scale }} cm/px</p>
+      <div class="diagnosis" [class.aneurysm]="isAneurysm">
+        {{ isAneurysm ? 'Possible AAA detected (>= 3.0 cm)' : 'Within normal range (< 3.0 cm)' }}
+      </div>
+      <div class="mask-preview">
+        <img [src]="maskUrl" alt="Mask frame {{ frameIndex }}" />
+        @if (result.measurement_line) {
+          <svg class="overlay-svg" viewBox="0 0 472 296">
+            <line
+              [attr.x1]="result.measurement_line.x_start"
+              [attr.y1]="result.measurement_line.y"
+              [attr.x2]="result.measurement_line.x_end"
+              [attr.y2]="result.measurement_line.y"
+              stroke="#ff6b6b"
+              stroke-width="2"
+            />
+            <rect
+              [attr.x]="result.bounding_rect.x"
+              [attr.y]="result.bounding_rect.y"
+              [attr.width]="result.bounding_rect.w"
+              [attr.height]="result.bounding_rect.h"
+              fill="none"
+              stroke="#4ecdc4"
+              stroke-width="1.5"
+              stroke-dasharray="4"
+            />
+          </svg>
+        }
+      </div>
+    </div>
+  }
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+</div>
