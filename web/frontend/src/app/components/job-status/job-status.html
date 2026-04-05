@@ -1,23 +1,24 @@
 <div class="job-status" [class]="'state-' + status.state">
   <div class="status-header">
     <span class="state-badge">{{ stateLabel }}</span>
-    @if (status.total > 0) {
-      <span class="progress-text">{{ status.progress }} / {{ status.total }}</span>
-    }
+    <span class="progress-text">
+      @if (status.total > 0) {
+        {{ status.progress }} / {{ status.total }} ({{ progressPercent }}%)
+      } @else {
+        Preparing...
+      }
+    </span>
   </div>
 
   @if (status.state !== 'error') {
     <div class="progress-bar-container">
       <div class="progress-bar" [style.width.%]="progressPercent"></div>
     </div>
-  }
-
-  @if (status.state === 'error') {
+    <p class="status-message">{{ status.message }}</p>
+  } @else {
     <div class="error-panel">
       <p class="error-title">Processing failed</p>
       <pre class="error-detail">{{ status.message }}</pre>
     </div>
-  } @else {
-    <p class="status-message">{{ status.message }}</p>
   }
 </div>

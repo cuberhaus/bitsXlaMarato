@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, EventEmitter, Output, HostListener } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output, HostListener } from '@angular/core';
 import { ApiService } from '../../services/api';
 
 @Component({
@@ -7,9 +7,8 @@ import { ApiService } from '../../services/api';
   templateUrl: './frame-viewer.html',
   styleUrl: './frame-viewer.css',
 })
-export class FrameViewerComponent implements OnChanges {
+export class FrameViewerComponent implements OnInit {
   @Input() jobId = '';
-  @Input() ready = false;
   @Output() frameSelected = new EventEmitter<number>();
 
   currentFrame = 0;
@@ -18,20 +17,13 @@ export class FrameViewerComponent implements OnChanges {
 
   constructor(private api: ApiService) {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (!this.ready || !this.jobId) return;
-    if (changes['ready'] || changes['jobId']) {
-      this.loadFrameCount();
-    }
-  }
-
-  private loadFrameCount() {
+  ngOnInit() {
+    if (!this.jobId) return;
     this.api.listFrames(this.jobId).subscribe({
       next: (res) => {
         this.totalFrames = res.count;
         this.currentFrame = 0;
       },
-      error: () => {},
     });
   }
 
