@@ -1,11 +1,53 @@
 <div class="three-container">
+  <div class="method-header">
+    <button class="info-toggle" (click)="showInfo = !showInfo">
+      {{ showInfo ? 'Hide method' : 'How it works' }}
+    </button>
+  </div>
+
+  @if (showInfo) {
+    <div class="method-info">
+      @if (method === 'original') {
+        <ol>
+          <li>Binary mask TIFFs (one per frame) are loaded as a voxel grid via <strong>meshlib</strong>.</li>
+          <li>The <code>gridToMesh</code> function extracts an isosurface at <code>isoValue = 127</code>
+              with uniform voxel size <code>(1, 1, 1)</code>.</li>
+          <li>The mesh is exported directly as STL with no post-processing.</li>
+        </ol>
+        <p class="method-note">
+          Because the masks are already binary (0 or 255), the isosurface follows the staircase
+          voxel boundaries exactly, producing blocky, jagged surfaces.
+        </p>
+      }
+      @if (method === 'improved') {
+        <ol>
+          <li>Masks are loaded into a 3D volume, then <strong>morphological closing + dilation</strong>
+              fills holes and ensures thin regions stay connected between frames.</li>
+          <li>An <strong>anisotropic 3D Gaussian blur</strong> (<code>&sigma; = 4,2,2</code>) smooths
+              the volume &mdash; heavier between frames (z) to bridge inter-frame gaps, lighter
+              in-plane (xy) to preserve detail.</li>
+          <li><strong>Marching cubes</strong> (scikit-image) extracts the isosurface at a low
+              threshold (<code>level = 0.3</code>) to keep thin/bridged regions connected.</li>
+          <li>Only the <strong>largest connected component</strong> is kept, discarding
+              small disconnected fragments.</li>
+          <li><strong>Taubin smoothing</strong> (30 iterations) reduces mesh noise without
+              shrinking the volume.</li>
+        </ol>
+        <p class="method-note">
+          The anisotropic blur and low threshold are key: they bridge the gaps between video frames
+          to produce a single continuous surface instead of a stack of disconnected slices.
+        </p>
+      }
+    </div>
+  }
+
   <div class="toolbar">
     <button
       class="gen-btn"
       (click)="generateMesh()"
       [disabled]="loading || !jobId"
     >
-      {{ loading ? 'Generating...' : (meshGenerated ? 'Regenerate 3D Mesh' : 'Generate 3D Mesh') }}
+      {{ loading ? 'Generating...' : (meshGenerated ? 'Regenerate' : 'Generate 3D Mesh') }}
     </button>
     @if (meshGenerated) {
       <span class="hint">Drag to rotate, scroll to zoom</span>

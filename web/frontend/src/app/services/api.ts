@@ -9,12 +9,32 @@ export interface JobStatus {
   message: string;
 }
 
+export interface MeasurementLine {
+  x1: number; y1: number; x2: number; y2: number;
+}
+
+export interface ImageSize {
+  w: number; h: number;
+}
+
 export interface DiameterResult {
   diameter_px: number;
   diameter_cm: number;
   bounding_rect: { x: number; y: number; w: number; h: number };
-  measurement_line: { y: number; x_start: number; x_end: number };
+  measurement_line: MeasurementLine;
+  image_size: ImageSize;
   pixel_scale: number;
+}
+
+export interface DiameterImprovedResult {
+  diameter_px: number;
+  diameter_cm: number;
+  bounding_rect: { x: number; y: number; w: number; h: number };
+  measurement_line: MeasurementLine;
+  ellipse: { cx: number; cy: number; major: number; minor: number; angle: number } | null;
+  image_size: ImageSize;
+  pixel_scale: number;
+  method: string;
 }
 
 export interface ServerStatus {
@@ -80,9 +100,22 @@ export class ApiService {
     return `${API}/jobs/${jobId}/mesh.stl`;
   }
 
+  triggerMeshImproved(jobId: string): Observable<{ stl_path: string; status: string }> {
+    return this.http.post<{ stl_path: string; status: string }>(`${API}/jobs/${jobId}/mesh-improved`, {});
+  }
+
+  getMeshImprovedUrl(jobId: string): string {
+    return `${API}/jobs/${jobId}/mesh-improved.stl`;
+  }
+
   getDiameter(jobId: string, frameIndex: number, pixelScale = 0.03378): Observable<DiameterResult> {
     const params = new HttpParams().set('pixel_scale', pixelScale.toString());
     return this.http.get<DiameterResult>(`${API}/jobs/${jobId}/diameter/${frameIndex}`, { params });
+  }
+
+  getDiameterImproved(jobId: string, frameIndex: number, pixelScale = 0.03378): Observable<DiameterImprovedResult> {
+    const params = new HttpParams().set('pixel_scale', pixelScale.toString());
+    return this.http.get<DiameterImprovedResult>(`${API}/jobs/${jobId}/diameter-improved/${frameIndex}`, { params });
   }
 
   getServerStatus(): Observable<ServerStatus> {

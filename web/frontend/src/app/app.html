@@ -38,22 +38,34 @@
       }
 
       @if (!processing && !errorMessage) {
-        <div class="results-grid">
+        <section class="card">
+          <h2 class="card-title">Frame Viewer</h2>
+          <app-frame-viewer [jobId]="jobId" (frameSelected)="onFrameSelected($event)"></app-frame-viewer>
+        </section>
+
+        <div class="comparison-grid">
           <section class="card">
-            <h2 class="card-title">Frame Viewer</h2>
-            <app-frame-viewer [jobId]="jobId" (frameSelected)="onFrameSelected($event)"></app-frame-viewer>
+            <h2 class="card-title">Measurement &mdash; Original</h2>
+            <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame" method="original"></app-diameter>
           </section>
 
           <section class="card">
-            <h2 class="card-title">Measurement</h2>
-            <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame"></app-diameter>
+            <h2 class="card-title">Measurement &mdash; Improved</h2>
+            <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame" method="improved"></app-diameter>
           </section>
         </div>
 
-        <section class="card">
-          <h2 class="card-title">3D Model</h2>
-          <app-three-viewer [jobId]="jobId"></app-three-viewer>
-        </section>
+        <div class="comparison-grid">
+          <section class="card">
+            <h2 class="card-title">3D Model &mdash; Original</h2>
+            <app-three-viewer [jobId]="jobId" method="original"></app-three-viewer>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">3D Model &mdash; Improved</h2>
+            <app-three-viewer [jobId]="jobId" method="improved"></app-three-viewer>
+          </section>
+        </div>
       }
     </div>
   }

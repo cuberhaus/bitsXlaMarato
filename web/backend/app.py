@@ -41,10 +41,15 @@ except ImportError:
     MESHLIB_AVAILABLE = False
 
 try:
-    from services.diameter import measure_diameter
+    from services.diameter import measure_diameter, measure_diameter_improved
     DIAMETER_AVAILABLE = True
 except ImportError:
     DIAMETER_AVAILABLE = False
+
+try:
+    from services.mesh_improved import generate_mesh_improved, IMPROVED_MESH_AVAILABLE
+except ImportError:
+    IMPROVED_MESH_AVAILABLE = False
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODELS_DIR = PROJECT_ROOT / "models"
@@ -287,6 +292,45 @@ async def get_diameter(job_id: str, n: int, pixel_scale: float = Query(0.03378))
     if "error" in result:
         raise HTTPException(400, result["error"])
     return result
+
+
+@app.get("/api/jobs/{job_id}/diameter-improved/{n}")
+async def get_diameter_improved(job_id: str, n: int, pixel_scale: float = Query(0.03378)):
+    if not DIAMETER_AVAILABLE:
+        raise HTTPException(500, "Diameter service unavailable: opencv not installed")
+    mask_path = JOBS_DIR / job_id / "output" / "masks" / f"mask_{n:04d}.tiff"
+    if not mask_path.exists():
+        raise HTTPException(404, "Mask not found for this frame")
+    result = measure_diameter_improved(str(mask_path), pixel_scale)
+    if "error" in result:
+        raise HTTPException(400, result["error"])
+    return result
+
+
+@app.post("/api/jobs/{job_id}/mesh-improved")
+async def trigger_mesh_improved(job_id: str):
+    masks_dir = JOBS_DIR / job_id / "output" / "masks"
+    if not masks_dir.exists():
+        raise HTTPException(404, "Masks not found. Run inference first.")
+    if not IMPROVED_MESH_AVAILABLE:
+        raise HTTPException(500, "Improved mesh dependencies not installed (scikit-image, trimesh)")
+    try:
+        stl_path = generate_mesh_improved(str(masks_dir))
+        return {"stl_path": str(stl_path), "status": "ok"}
+    except Exception as e:
+        raise HTTPException(500, f"Improved mesh generation failed: {e}") from e
+
+
+@app.get("/api/jobs/{job_id}/mesh-improved.stl")
+async def get_mesh_improved(job_id: str):
+    stl_path = JOBS_DIR / job_id / "output" / "masks" / "mesh3D_improved.stl"
+    if not stl_path.exists():
+        raise HTTPException(404, "Improved mesh not found. Trigger generation first.")
+    return FileResponse(
+        str(stl_path),
+        media_type="application/sla",
+        filename="aorta_mesh_improved.stl",
+    )
 
 
 @app.get("/api/status")

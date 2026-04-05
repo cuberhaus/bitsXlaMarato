@@ -12,11 +12,13 @@ import { ApiService } from '../../services/api';
 })
 export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() jobId = '';
+  @Input() method: 'original' | 'improved' = 'original';
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
   loading = false;
   meshGenerated = false;
   error = '';
+  showInfo = false;
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
@@ -56,7 +58,7 @@ export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges
   private initScene() {
     const canvas = this.canvasRef.nativeElement;
     const w = canvas.parentElement?.clientWidth || 800;
-    const h = 500;
+    const h = 400;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x1a1d27);
@@ -96,7 +98,11 @@ export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges
     this.loading = true;
     this.error = '';
 
-    this.api.triggerMesh(this.jobId).subscribe({
+    const trigger$ = this.method === 'improved'
+      ? this.api.triggerMeshImproved(this.jobId)
+      : this.api.triggerMesh(this.jobId);
+
+    trigger$.subscribe({
       next: () => {
         this.meshGenerated = true;
         this.cdr.detectChanges();
@@ -112,7 +118,13 @@ export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges
 
   private loadSTL() {
     const loader = new STLLoader();
-    const url = this.api.getMeshUrl(this.jobId);
+    const url = this.method === 'improved'
+      ? this.api.getMeshImprovedUrl(this.jobId)
+      : this.api.getMeshUrl(this.jobId);
+
+    const meshColor = this.method === 'improved'
+      ? new THREE.Color(78 / 255, 205 / 255, 196 / 255)
+      : new THREE.Color(252 / 255, 3 / 255, 115 / 255);
 
     loader.load(
       url,
@@ -121,7 +133,7 @@ export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges
         geometry.center();
 
         const material = new THREE.MeshPhongMaterial({
-          color: new THREE.Color(252 / 255, 3 / 255, 115 / 255),
+          color: meshColor,
           specular: 0x444444,
           shininess: 40,
           side: THREE.DoubleSide,

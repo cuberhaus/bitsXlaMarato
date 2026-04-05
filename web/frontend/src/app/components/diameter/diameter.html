@@ -1,4 +1,43 @@
 <div class="diameter-panel">
+  <div class="method-header">
+    <button class="info-toggle" (click)="showInfo = !showInfo">
+      {{ showInfo ? 'Hide method' : 'How it works' }}
+    </button>
+  </div>
+
+  @if (showInfo) {
+    <div class="method-info">
+      @if (method === 'original') {
+        <ol>
+          <li>The mask image is thresholded to binary using Otsu's method.</li>
+          <li>All contours are found via <code>cv2.findContours</code>.</li>
+          <li>The contour with the <strong>tallest bounding rectangle</strong> is selected.</li>
+          <li>The bounding rect height <code>h</code> (in pixels) is taken as the diameter.</li>
+          <li>Diameter in cm = <code>h &times; pixel_scale</code>.</li>
+        </ol>
+        <p class="method-note">
+          Limitation: uses vertical extent only, so tilted shapes give inflated readings.
+          Not rotation-invariant.
+        </p>
+      }
+      @if (method === 'improved') {
+        <ol>
+          <li>The mask is thresholded to binary (same as original).</li>
+          <li>The <strong>largest contour by area</strong> is selected (filters out noise).</li>
+          <li>An <strong>ellipse</strong> is fitted to the contour via <code>cv2.fitEllipse</code>.</li>
+          <li>The ellipse <strong>minor axis</strong> gives the vessel width &mdash; the clinically
+              relevant cross-sectional diameter, rotation-invariant.</li>
+          <li>Diameter in cm = <code>minor_axis_px &times; pixel_scale</code>.</li>
+        </ol>
+        <p class="method-note">
+          Rotation-invariant: adapts to any vessel orientation.
+          The red line shows the minor axis; the dashed yellow ellipse
+          is the fitted shape; the dashed teal rectangle is the bounding box.
+        </p>
+      }
+    </div>
+  }
+
   <div class="measure-controls">
     <div class="param-row">
       <label>Pixel Scale (cm/px)</label>
@@ -12,38 +51,84 @@
     </div>
   </div>
 
-  @if (result) {
+  @if (hasResult) {
     <div class="result-card">
       <div class="diameter-value" [class.aneurysm]="isAneurysm">
-        <span class="big-number">{{ result.diameter_cm }}</span>
+        <span class="big-number">{{ diameterCm }}</span>
         <span class="unit">cm</span>
       </div>
-      <p class="diameter-detail">{{ result.diameter_px }} px at scale {{ result.pixel_scale }} cm/px</p>
+      <p class="diameter-detail">{{ diameterPx }} px at scale {{ currentPixelScale }} cm/px</p>
       <div class="diagnosis" [class.aneurysm]="isAneurysm">
         {{ isAneurysm ? 'Possible AAA detected (>= 3.0 cm)' : 'Within normal range (< 3.0 cm)' }}
       </div>
+
+      @if (method === 'improved' && resultImproved?.ellipse) {
+        <p class="ellipse-info">
+          Ellipse: {{ resultImproved!.ellipse!.major }} (length) x {{ resultImproved!.ellipse!.minor }} (width) px
+        </p>
+      }
+
       <div class="mask-preview">
         <img [src]="maskUrl" alt="Mask frame {{ frameIndex }}" />
-        @if (result.measurement_line) {
-          <svg class="overlay-svg" viewBox="0 0 472 296">
+
+        @if (method === 'original' && result?.measurement_line) {
+          <svg class="overlay-svg"
+            [attr.viewBox]="'0 0 ' + result!.image_size.w + ' ' + result!.image_size.h">
             <line
-              [attr.x1]="result.measurement_line.x_start"
-              [attr.y1]="result.measurement_line.y"
-              [attr.x2]="result.measurement_line.x_end"
-              [attr.y2]="result.measurement_line.y"
+              [attr.x1]="result!.measurement_line.x1"
+              [attr.y1]="result!.measurement_line.y1"
+              [attr.x2]="result!.measurement_line.x2"
+              [attr.y2]="result!.measurement_line.y2"
               stroke="#ff6b6b"
               stroke-width="2"
             />
             <rect
-              [attr.x]="result.bounding_rect.x"
-              [attr.y]="result.bounding_rect.y"
-              [attr.width]="result.bounding_rect.w"
-              [attr.height]="result.bounding_rect.h"
+              [attr.x]="result!.bounding_rect.x"
+              [attr.y]="result!.bounding_rect.y"
+              [attr.width]="result!.bounding_rect.w"
+              [attr.height]="result!.bounding_rect.h"
               fill="none"
               stroke="#4ecdc4"
               stroke-width="1.5"
               stroke-dasharray="4"
             />
+          </svg>
+        }
+
+        @if (method === 'improved' && resultImproved?.measurement_line) {
+          <svg class="overlay-svg"
+            [attr.viewBox]="'0 0 ' + resultImproved!.image_size.w + ' ' + resultImproved!.image_size.h">
+            <line
+              [attr.x1]="resultImproved!.measurement_line.x1"
+              [attr.y1]="resultImproved!.measurement_line.y1"
+              [attr.x2]="resultImproved!.measurement_line.x2"
+              [attr.y2]="resultImproved!.measurement_line.y2"
+              stroke="#ff6b6b"
+              stroke-width="2"
+            />
+            <rect
+              [attr.x]="resultImproved!.bounding_rect.x"
+              [attr.y]="resultImproved!.bounding_rect.y"
+              [attr.width]="resultImproved!.bounding_rect.w"
+              [attr.height]="resultImproved!.bounding_rect.h"
+              fill="none"
+              stroke="#4ecdc4"
+              stroke-width="1.5"
+              stroke-dasharray="4"
+            />
+            @if (resultImproved!.ellipse; as ell) {
+              <ellipse
+                [attr.cx]="ell.cx"
+                [attr.cy]="ell.cy"
+                [attr.rx]="ell.major / 2"
+                [attr.ry]="ell.minor / 2"
+                [attr.transform]="'rotate(' + ell.angle + ' ' + ell.cx + ' ' + ell.cy + ')'"
+                fill="none"
+                stroke="#f7b731"
+                stroke-width="1.5"
+                stroke-dasharray="6 3"
+              />
+            }
           </svg>
         }
       </div>
