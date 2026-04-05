@@ -233,7 +233,13 @@ async def get_mask(job_id: str, n: int):
     mask_path = JOBS_DIR / job_id / "output" / "masks" / f"mask_{n:04d}.tiff"
     if not mask_path.exists():
         raise HTTPException(404, "Mask not found")
-    return FileResponse(str(mask_path), media_type="image/tiff")
+    from io import BytesIO
+    from PIL import Image
+    img = Image.open(mask_path)
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return StreamingResponse(buf, media_type="image/png")
 
 
 @app.get("/api/jobs/{job_id}/video")
