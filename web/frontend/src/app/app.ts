@@ -21,9 +21,9 @@ import { ApiService, ServerStatus } from './services/api';
 })
 export class AppComponent {
   jobId = '';
-  activeTab: 'frames' | '3d' | 'measurement' = 'frames';
   processing = false;
   selectedFrame = 0;
+  errorMessage = '';
   serverStatus: ServerStatus | null = null;
 
   constructor(private api: ApiService) {
@@ -36,10 +36,7 @@ export class AppComponent {
     this.jobId = jobId;
     this.processing = true;
     this.errorMessage = '';
-    this.activeTab = 'frames';
   }
-
-  errorMessage = '';
 
   onJobCompleted() {
     this.processing = false;

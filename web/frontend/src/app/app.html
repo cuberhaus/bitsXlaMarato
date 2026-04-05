@@ -38,23 +38,22 @@
       }
 
       @if (!processing && !errorMessage) {
-        <div class="tabs">
-          <button class="tab" [class.active]="activeTab === 'frames'" (click)="activeTab = 'frames'">Frames</button>
-          <button class="tab" [class.active]="activeTab === '3d'" (click)="activeTab = '3d'">3D Model</button>
-          <button class="tab" [class.active]="activeTab === 'measurement'" (click)="activeTab = 'measurement'">Measurement</button>
+        <div class="results-grid">
+          <section class="card">
+            <h2 class="card-title">Frame Viewer</h2>
+            <app-frame-viewer [jobId]="jobId" (frameSelected)="onFrameSelected($event)"></app-frame-viewer>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">Measurement</h2>
+            <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame"></app-diameter>
+          </section>
         </div>
 
-        <div class="tab-content">
-          <div [style.display]="activeTab === 'frames' ? 'block' : 'none'">
-            <app-frame-viewer [jobId]="jobId" (frameSelected)="onFrameSelected($event)"></app-frame-viewer>
-          </div>
-          <div [style.display]="activeTab === '3d' ? 'block' : 'none'">
-            <app-three-viewer [jobId]="jobId"></app-three-viewer>
-          </div>
-          <div [style.display]="activeTab === 'measurement' ? 'block' : 'none'">
-            <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame"></app-diameter>
-          </div>
-        </div>
+        <section class="card">
+          <h2 class="card-title">3D Model</h2>
+          <app-three-viewer [jobId]="jobId"></app-three-viewer>
+        </section>
       }
     </div>
   }
