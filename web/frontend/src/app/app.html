@@ -26,10 +26,18 @@
         <app-job-status
           [jobId]="jobId"
           (completed)="onJobCompleted()"
+          (failed)="onJobFailed($event)"
         ></app-job-status>
       }
 
-      @if (!processing) {
+      @if (errorMessage) {
+        <div class="error-bar">
+          <span>{{ errorMessage }}</span>
+          <button class="reset-btn" (click)="resetJob()">Try Again</button>
+        </div>
+      }
+
+      @if (!processing && !errorMessage) {
         <div class="tabs">
           <button class="tab" [class.active]="activeTab === 'frames'" (click)="activeTab = 'frames'">Frames</button>
           <button class="tab" [class.active]="activeTab === '3d'" (click)="activeTab = '3d'">3D Model</button>

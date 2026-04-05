@@ -58,3 +58,29 @@
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
+
+.error-panel {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 6px;
+  background: rgba(255, 107, 107, 0.08);
+  border: 1px solid rgba(255, 107, 107, 0.25);
+}
+
+.error-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #ff6b6b;
+  margin-bottom: 8px;
+}
+
+.error-detail {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}

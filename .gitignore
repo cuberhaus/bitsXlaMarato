@@ -1,8 +1,22 @@
 ._*
 .idea/
-models/
+__pycache__/
 *.pyc
 *.ipynb_checkpoints
+
+# Large / generated files
 *.tiff
 *.png
 *.stl
+
+# Backend
+web/backend/jobs/
+
+# Frontend
+web/frontend/node_modules/
+web/frontend/dist/
+web/frontend/.angular/
+
+# Environment
+.venv/
+.env

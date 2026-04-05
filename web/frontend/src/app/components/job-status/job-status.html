@@ -6,9 +6,18 @@
     }
   </div>
 
-  <div class="progress-bar-container">
-    <div class="progress-bar" [style.width.%]="progressPercent"></div>
-  </div>
+  @if (status.state !== 'error') {
+    <div class="progress-bar-container">
+      <div class="progress-bar" [style.width.%]="progressPercent"></div>
+    </div>
+  }
 
-  <p class="status-message">{{ status.message }}</p>
+  @if (status.state === 'error') {
+    <div class="error-panel">
+      <p class="error-title">Processing failed</p>
+      <pre class="error-detail">{{ status.message }}</pre>
+    </div>
+  } @else {
+    <p class="status-message">{{ status.message }}</p>
+  }
 </div>

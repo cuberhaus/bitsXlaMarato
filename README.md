@@ -22,6 +22,38 @@ We are proud of finishing on time and delivering a product that the challengers 
 ## What we learned
 A lot of Python and how to use a AI. Before we did not know a lot about marking images and we were a bit worried it would not work after investing so much time into it.
 
+## Setup
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- Git LFS (model weights are stored with LFS)
+
+### Quick Start
+
+```bash
+# Pull model weights (required on first clone)
+git lfs pull
+
+# Install dependencies and launch both servers
+make dev
+```
+
+This starts the FastAPI backend on `:8001` and the Angular frontend on `:4200`. Open http://localhost:4200 to use the web interface.
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Install deps + launch backend and frontend |
+| `make dev-backend` | Start FastAPI backend only |
+| `make dev-frontend` | Start Angular dev server only |
+| `make build` | Build Angular frontend for production |
+| `make serve` | Build frontend + start production server |
+| `make clean-jobs` | Remove processed job data |
+| `make clean` | Remove all generated files |
+
 ## What's next for Aneurism detection with MarkRCNN
 We are giving the challengers the trained model, which they can reuse. This would prove useful if they mark the frames of the ecographies, because even though we asked for help, they are professionals and can read an ecography proficiently.
 Also, we are giving them a GUI and all the scripts used for the application.

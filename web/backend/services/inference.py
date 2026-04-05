@@ -107,6 +107,8 @@ def segment_frame(
 
     for i in range(len(masks)):
         rgb_mask = _get_coloured_mask(masks[i])
+        if rgb_mask.shape[:2] != img.shape[:2]:
+            rgb_mask = cv2.resize(rgb_mask, (img.shape[1], img.shape[0]), interpolation=cv2.INTER_NEAREST)
         img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
 
     return img, rgb_mask
@@ -127,15 +129,26 @@ def run_inference(
     frames = sorted(glob(os.path.join(frames_dir, "*.jpg")))
     total = len(frames)
 
+    errors = 0
     for i, frame_path in enumerate(frames):
-        overlay, mask = segment_frame(frame_path, model, confidence)
-        cv2.imwrite(
-            os.path.join(overlays_dir, f"overlay_{i:04d}.jpg"),
-            cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR),
-        )
-        if mask is not None:
-            cv2.imwrite(os.path.join(masks_dir, f"mask_{i:04d}.tiff"), mask)
+        try:
+            overlay, mask = segment_frame(frame_path, model, confidence)
+            cv2.imwrite(
+                os.path.join(overlays_dir, f"overlay_{i:04d}.jpg"),
+                cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR),
+            )
+            if mask is not None:
+                cv2.imwrite(os.path.join(masks_dir, f"mask_{i:04d}.tiff"), mask)
+        except Exception as e:
+            errors += 1
+            print(f"[frame {i}] skipped: {e}")
+            raw = cv2.imread(frame_path)
+            if raw is not None:
+                cv2.imwrite(os.path.join(overlays_dir, f"overlay_{i:04d}.jpg"), raw)
         yield (i + 1, total)
+
+    if errors:
+        print(f"Inference done with {errors}/{total} frame(s) skipped due to errors.")
 
 
 def compose_video(frames_dir: str, output_path: str, fps: int = 15) -> None:

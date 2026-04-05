@@ -35,11 +35,19 @@ export class AppComponent {
   onJobStarted(jobId: string) {
     this.jobId = jobId;
     this.processing = true;
+    this.errorMessage = '';
     this.activeTab = 'frames';
   }
 
+  errorMessage = '';
+
   onJobCompleted() {
     this.processing = false;
+  }
+
+  onJobFailed(message: string) {
+    this.processing = false;
+    this.errorMessage = message;
   }
 
   onFrameSelected(index: number) {
@@ -49,6 +57,7 @@ export class AppComponent {
   resetJob() {
     this.jobId = '';
     this.processing = false;
+    this.errorMessage = '';
     this.selectedFrame = 0;
   }
 }
