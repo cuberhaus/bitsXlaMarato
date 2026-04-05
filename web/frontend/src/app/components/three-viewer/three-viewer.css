@@ -64,7 +64,52 @@
   50% { opacity: 0.4; }
 }
 
-.error {
+.error-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 17, 23, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 2.5rem;
   color: #ff6b6b;
+}
+
+.error-title {
+  color: #ff6b6b;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.error-detail {
+  color: #ff9a9a;
   font-size: 0.85rem;
+  font-family: var(--font-mono);
+  max-width: 500px;
+  word-break: break-word;
+  margin: 0;
+}
+
+.retry-btn {
+  margin-top: 8px;
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.retry-btn:hover {
+  background: #ff4444;
 }

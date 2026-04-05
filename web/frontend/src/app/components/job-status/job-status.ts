@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, EventEmitter, Output, NgZone } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { ApiService, JobStatus } from '../../services/api';
 
 @Component({
@@ -13,37 +13,50 @@ export class JobStatusComponent implements OnInit, OnDestroy {
   @Output() failed = new EventEmitter<string>();
 
   status: JobStatus = { state: 'uploading', progress: 0, total: 0, message: 'Starting...' };
-  private eventSource: EventSource | null = null;
+  private pollTimer: ReturnType<typeof setInterval> | null = null;
+  private done = false;
 
-  constructor(private api: ApiService, private zone: NgZone) {}
+  constructor(private api: ApiService) {}
 
   ngOnInit() {
     if (!this.jobId) return;
-    this.eventSource = this.api.createSSE(this.jobId);
-    this.eventSource.onmessage = (event) => {
-      this.zone.run(() => {
-        this.status = JSON.parse(event.data);
-        if (this.status.state === 'done' || this.status.state === 'error') {
-          this.eventSource?.close();
-          if (this.status.state === 'done') {
-            this.completed.emit();
-          } else {
-            this.failed.emit(this.status.message);
-          }
-        }
-      });
-    };
-    this.eventSource.onerror = () => {
-      this.zone.run(() => {
-        this.eventSource?.close();
-        this.status = { ...this.status, state: 'error', message: 'Connection to server lost.' };
-        this.failed.emit(this.status.message);
-      });
-    };
+    this.poll();
+    this.pollTimer = setInterval(() => this.poll(), 500);
   }
 
   ngOnDestroy() {
-    this.eventSource?.close();
+    this.stopPolling();
+  }
+
+  private stopPolling() {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  private poll() {
+    if (this.done) return;
+    this.api.pollJobStatus(this.jobId).subscribe({
+      next: (s) => {
+        this.status = s;
+        if (s.state === 'done') {
+          this.done = true;
+          this.stopPolling();
+          this.completed.emit();
+        } else if (s.state === 'error') {
+          this.done = true;
+          this.stopPolling();
+          this.failed.emit(s.message);
+        }
+      },
+      error: () => {
+        this.done = true;
+        this.stopPolling();
+        this.status = { ...this.status, state: 'error', message: 'Lost connection to server.' };
+        this.failed.emit(this.status.message);
+      },
+    });
   }
 
   get progressPercent(): number {

@@ -43,12 +43,17 @@ def generate_mesh(masks_dir: str) -> Path:
     if os.path.exists(stl_path):
         os.remove(stl_path)
 
-    settings = mr.LoadingTiffSettings()
-    settings.dir = masks_dir
-    settings.voxelSize = mr.Vector3f(1, 1, 1)
+    tiff_settings = mr.VoxelsLoad.LoadingTiffSettings()
+    tiff_settings.dir = masks_dir
+    tiff_settings.voxelSize = mr.Vector3f(1, 1, 1)
 
-    volume = mr.loadTiffDir(settings)
-    mesh = mr.gridToMesh(volume.value(), 127.0)
-    mr.saveMesh(mesh.value(), mr.Path(stl_path))
+    volume = mr.VoxelsLoad.loadTiffDir(tiff_settings)
+
+    grid_settings = mr.GridToMeshSettings()
+    grid_settings.isoValue = 127.0
+    grid_settings.voxelSize = mr.Vector3f(1, 1, 1)
+
+    mesh = mr.gridToMesh(volume.data, grid_settings)
+    mr.saveMesh(mesh, stl_path)
 
     return Path(stl_path)

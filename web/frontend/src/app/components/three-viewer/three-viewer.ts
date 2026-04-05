@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
+import { Component, Input, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnChanges, NgZone } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
@@ -24,7 +24,7 @@ export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges
   private controls!: OrbitControls;
   private animationId = 0;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private zone: NgZone) {}
 
   ngAfterViewInit() {
     this.initScene();
@@ -114,26 +114,26 @@ export class ThreeViewerComponent implements AfterViewInit, OnDestroy, OnChanges
 
         const mesh = new THREE.Mesh(geometry, material);
 
-        // Auto-scale to fit view
         const box = new THREE.Box3().setFromObject(mesh);
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 200 / maxDim;
         mesh.scale.set(scale, scale, scale);
 
-        // Remove any previous meshes
         const toRemove = this.scene.children.filter((c) => c instanceof THREE.Mesh);
         toRemove.forEach((m) => this.scene.remove(m));
 
         this.scene.add(mesh);
         this.camera.position.set(0, 0, 300);
         this.controls.reset();
-        this.loading = false;
+        this.zone.run(() => { this.loading = false; });
       },
       undefined,
       (err) => {
-        this.loading = false;
-        this.error = 'Failed to load STL file';
+        this.zone.run(() => {
+          this.loading = false;
+          this.error = 'Failed to load 3D mesh file from server';
+        });
       }
     );
   }
