@@ -45,15 +45,15 @@
         </div>
 
         <div class="tab-content">
-          @if (activeTab === 'frames') {
+          <div [style.display]="activeTab === 'frames' ? 'block' : 'none'">
             <app-frame-viewer [jobId]="jobId" (frameSelected)="onFrameSelected($event)"></app-frame-viewer>
-          }
-          @if (activeTab === '3d') {
+          </div>
+          <div [style.display]="activeTab === '3d' ? 'block' : 'none'">
             <app-three-viewer [jobId]="jobId"></app-three-viewer>
-          }
-          @if (activeTab === 'measurement') {
+          </div>
+          <div [style.display]="activeTab === 'measurement' ? 'block' : 'none'">
             <app-diameter [jobId]="jobId" [frameIndex]="selectedFrame"></app-diameter>
-          }
+          </div>
         </div>
       }
     </div>

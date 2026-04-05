@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, EventEmitter, Output, ChangeDetectorRef } from '@angular/core';
 import { ApiService, JobStatus } from '../../services/api';
 
 @Component({
@@ -16,7 +16,7 @@ export class JobStatusComponent implements OnInit, OnDestroy {
   private pollTimer: ReturnType<typeof setInterval> | null = null;
   private done = false;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     if (!this.jobId) return;
@@ -39,9 +39,8 @@ export class JobStatusComponent implements OnInit, OnDestroy {
     if (this.done) return;
     this.api.pollJobStatus(this.jobId).subscribe({
       next: (s) => {
-
-
         this.status = s;
+        this.cdr.detectChanges();
         if (s.state === 'done') {
           this.done = true;
           this.stopPolling();
@@ -52,13 +51,12 @@ export class JobStatusComponent implements OnInit, OnDestroy {
           this.failed.emit(s.message);
         }
       },
-      error: (err) => {
-
-
+      error: () => {
         this.done = true;
         this.stopPolling();
         this.status = { ...this.status, state: 'error', message: 'Lost connection to server.' };
         this.failed.emit(this.status.message);
+        this.cdr.detectChanges();
       },
     });
   }

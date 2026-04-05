@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, EventEmitter, Output, HostListener } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ApiService } from '../../services/api';
 
 @Component({
@@ -15,7 +15,7 @@ export class FrameViewerComponent implements OnInit {
   totalFrames = 0;
   showOverlay = true;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     if (!this.jobId) return;
@@ -23,6 +23,7 @@ export class FrameViewerComponent implements OnInit {
       next: (res) => {
         this.totalFrames = res.count;
         this.currentFrame = 0;
+        this.cdr.detectChanges();
       },
     });
   }

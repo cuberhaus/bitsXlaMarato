@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService, DiameterResult } from '../../services/api';
 
@@ -18,7 +18,7 @@ export class DiameterComponent implements OnChanges {
   loading = false;
   error = '';
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['frameIndex'] || changes['jobId']) {
@@ -32,15 +32,18 @@ export class DiameterComponent implements OnChanges {
     this.loading = true;
     this.error = '';
     this.result = null;
+    this.cdr.detectChanges();
 
     this.api.getDiameter(this.jobId, this.frameIndex, this.pixelScale).subscribe({
       next: (res) => {
         this.result = res;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = err.error?.detail || 'No mask found for this frame';
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }
