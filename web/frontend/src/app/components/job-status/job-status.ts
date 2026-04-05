@@ -39,6 +39,8 @@ export class JobStatusComponent implements OnInit, OnDestroy {
     if (this.done) return;
     this.api.pollJobStatus(this.jobId).subscribe({
       next: (s) => {
+
+
         this.status = s;
         if (s.state === 'done') {
           this.done = true;
@@ -50,7 +52,9 @@ export class JobStatusComponent implements OnInit, OnDestroy {
           this.failed.emit(s.message);
         }
       },
-      error: () => {
+      error: (err) => {
+
+
         this.done = true;
         this.stopPolling();
         this.status = { ...this.status, state: 'error', message: 'Lost connection to server.' };
