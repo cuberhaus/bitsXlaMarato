@@ -4,7 +4,7 @@ import { JobStatusComponent } from './components/job-status/job-status';
 import { FrameViewerComponent } from './components/frame-viewer/frame-viewer';
 import { ThreeViewerComponent } from './components/three-viewer/three-viewer';
 import { DiameterComponent } from './components/diameter/diameter';
-import { ApiService, ServerStatus } from './services/api';
+import { ApiService, ServerStatus, ModelInfo } from './services/api';
 
 @Component({
   selector: 'app-root',
@@ -26,11 +26,14 @@ export class AppComponent implements OnDestroy {
   errorMessage = '';
   serverStatus: ServerStatus | null = null;
   compileElapsed = 0;
+  models: ModelInfo[] = [];
+  switchingModel = false;
   private statusPoll: ReturnType<typeof setInterval> | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
 
   constructor(private api: ApiService) {
     this.fetchStatus();
+    this.fetchModels();
     this.statusPoll = setInterval(() => this.fetchStatus(), 2000);
     this.timer = setInterval(() => {
       if (this.serverStatus && this.serverStatus.model_status !== 'ready') {
@@ -48,11 +51,39 @@ export class AppComponent implements OnDestroy {
     this.api.getServerStatus().subscribe({
       next: (s) => {
         this.serverStatus = s;
-        if (s.model_status === 'ready') {
+        if (s.model_status === 'ready' && !this.switchingModel) {
           if (this.statusPoll) { clearInterval(this.statusPoll); this.statusPoll = null; }
           if (this.timer) { clearInterval(this.timer); this.timer = null; }
         }
       },
+    });
+  }
+
+  private fetchModels() {
+    this.api.getModels().subscribe({ next: (m) => this.models = m });
+  }
+
+  onModelSwitch(name: string) {
+    if (this.switchingModel || this.processing) return;
+    this.switchingModel = true;
+    this.compileElapsed = 0;
+    if (!this.statusPoll) {
+      this.statusPoll = setInterval(() => this.fetchStatus(), 2000);
+    }
+    if (!this.timer) {
+      this.timer = setInterval(() => {
+        if (this.serverStatus && this.serverStatus.model_status !== 'ready') {
+          this.compileElapsed++;
+        }
+      }, 1000);
+    }
+    this.api.switchModel(name).subscribe({
+      next: () => {
+        this.switchingModel = false;
+        this.fetchModels();
+        this.fetchStatus();
+      },
+      error: () => { this.switchingModel = false; },
     });
   }
 

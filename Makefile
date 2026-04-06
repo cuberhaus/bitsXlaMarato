@@ -59,6 +59,26 @@ build: build-frontend
 serve: build-frontend
 	cd $(BACKEND_DIR) && $(PYTHON) -m uvicorn app:app --host 0.0.0.0 --port $(BACKEND_PORT)
 
+# ── Docker ─────────────────────────────────────────────
+
+.PHONY: docker-build docker-up docker-down docker-logs
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up -d
+	@echo ""
+	@echo "  Aorta Viewer is running at:"
+	@echo "    ➜  http://localhost:8001"
+	@echo ""
+
+docker-down:
+	docker compose down
+
+docker-logs:
+	docker compose logs -f
+
 # ── Cleanup ────────────────────────────────────────────
 
 .PHONY: clean clean-jobs
@@ -82,5 +102,9 @@ help:
 	@echo "  make dev-frontend     Start Angular dev server only on :4200"
 	@echo "  make build            Build Angular frontend for production"
 	@echo "  make serve            Build frontend + start production server on :8001"
+	@echo "  make docker-build     Build Docker image (includes GPU + model files)"
+	@echo "  make docker-up        Start container with GPU passthrough"
+	@echo "  make docker-down      Stop container"
+	@echo "  make docker-logs      Tail container logs"
 	@echo "  make clean-jobs       Remove processed job data"
 	@echo "  make clean            Remove all generated files"

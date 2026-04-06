@@ -62,15 +62,18 @@ FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist" / "f
 DEFAULT_MODEL = "maratoNuevo.pt"
 DEFAULT_CROP = (84, 380, 54, 526)  # y1, y2, x1, x2
 
+active_model_name: str = DEFAULT_MODEL
 jobs: dict[str, dict] = {}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global active_model_name
     model_path = MODELS_DIR / DEFAULT_MODEL
     if INFERENCE_AVAILABLE and model_path.exists() and model_path.stat().st_size > 1000:
         try:
             load_model(str(model_path))
+            active_model_name = DEFAULT_MODEL
             print(f"Model loaded from {model_path}")
             thread = threading.Thread(target=warmup_model, daemon=True)
             thread.start()
@@ -344,6 +347,45 @@ async def get_mesh_improved(job_id: str):
     )
 
 
+@app.get("/api/models")
+async def list_models():
+    models = []
+    if MODELS_DIR.exists():
+        for p in sorted(MODELS_DIR.glob("*.pt")):
+            models.append({"name": p.name, "active": p.name == active_model_name})
+    return models
+
+
+@app.post("/api/models/switch")
+async def switch_model(body: dict):
+    global active_model_name
+    name = body.get("name", "")
+    if not name or not name.endswith(".pt"):
+        raise HTTPException(400, "Invalid model name")
+    model_path = MODELS_DIR / name
+    if not model_path.exists():
+        raise HTTPException(404, f"Model '{name}' not found")
+    resolved = model_path.resolve()
+    if not str(resolved).startswith(str(MODELS_DIR.resolve())):
+        raise HTTPException(400, "Path traversal not allowed")
+
+    running = [j for j in jobs.values() if j["state"] not in ("done", "error")]
+    if running:
+        raise HTTPException(409, "Cannot switch models while a job is running")
+
+    if not INFERENCE_AVAILABLE:
+        raise HTTPException(500, "Inference unavailable: torch/torchvision not installed")
+
+    try:
+        load_model(str(model_path))
+        active_model_name = name
+        thread = threading.Thread(target=warmup_model, daemon=True)
+        thread.start()
+        return {"status": "ok", "active_model": name}
+    except Exception as e:
+        raise HTTPException(500, f"Failed to load model: {e}") from e
+
+
 @app.get("/api/status")
 async def server_status():
     gpu = TORCH_AVAILABLE and torch.cuda.is_available()
@@ -360,6 +402,7 @@ async def server_status():
         "inference_available": INFERENCE_AVAILABLE,
         "model_status": ms,
         "model_status_detail": msd,
+        "active_model": active_model_name,
         "active_jobs": len([j for j in jobs.values() if j["state"] not in ("done", "error")]),
     }
 

@@ -44,7 +44,13 @@ export interface ServerStatus {
   meshlib_available: boolean;
   model_status: string;
   model_status_detail: string;
+  active_model: string;
   active_jobs: number;
+}
+
+export interface ModelInfo {
+  name: string;
+  active: boolean;
 }
 
 const API = '/api';
@@ -122,5 +128,13 @@ export class ApiService {
 
   getServerStatus(): Observable<ServerStatus> {
     return this.http.get<ServerStatus>(`${API}/status`);
+  }
+
+  getModels(): Observable<ModelInfo[]> {
+    return this.http.get<ModelInfo[]>(`${API}/models`);
+  }
+
+  switchModel(name: string): Observable<{ status: string; active_model: string }> {
+    return this.http.post<{ status: string; active_model: string }>(`${API}/models/switch`, { name });
   }
 }

@@ -4,6 +4,19 @@
     <span class="subtitle">Ecography Segmentation + 3D</span>
   </div>
   <div class="status-info">
+    @if (models.length > 1) {
+      <div class="model-selector">
+        <label class="model-label">Model</label>
+        <select
+          class="model-dropdown"
+          [disabled]="switchingModel || processing"
+          (change)="onModelSwitch($any($event.target).value)">
+          @for (m of models; track m.name) {
+            <option [value]="m.name" [selected]="m.active">{{ m.name }}</option>
+          }
+        </select>
+      </div>
+    }
     @if (serverStatus) {
       <span class="server-badge" [class.gpu]="serverStatus.gpu_available">
         {{ serverStatus.gpu_available ? serverStatus.gpu_name : 'CPU Mode' }}

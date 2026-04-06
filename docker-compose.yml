@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8001:8001"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - jobs:/app/web/backend/jobs
+    environment:
+      - BATCH_SIZE=${BATCH_SIZE:-16}
+
+volumes:
+  jobs:

@@ -39,6 +39,35 @@
   color: #4ecdc4;
 }
 
+.model-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.model-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.model-dropdown {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.model-dropdown:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .reset-btn {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
