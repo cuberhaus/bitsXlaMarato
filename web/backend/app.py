@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
-import shutil
 import threading
 import time
 import uuid
 from contextlib import asynccontextmanager
-from glob import glob
 from pathlib import Path
 from typing import Optional
 
@@ -132,8 +131,8 @@ async def upload_video(
 
     video_path = str(job_dir / file.filename)
     with open(video_path, "wb") as f:
-        content = await file.read()
-        f.write(content)
+        while chunk := await file.read(1024 * 1024):
+            f.write(chunk)
 
     if not INFERENCE_AVAILABLE:
         raise HTTPException(500, "Inference unavailable: torch/torchvision not installed")
@@ -235,14 +234,20 @@ async def get_overlay(job_id: str, n: int):
 
 @app.get("/api/jobs/{job_id}/masks/{n}")
 async def get_mask(job_id: str, n: int):
-    mask_path = JOBS_DIR / job_id / "output" / "masks" / f"mask_{n:04d}.tiff"
-    if not mask_path.exists():
+    masks_base = JOBS_DIR / job_id / "output" / "masks"
+    png_path = masks_base / f"mask_{n:04d}.png"
+    if png_path.exists():
+        return FileResponse(str(png_path), media_type="image/png")
+    tiff_path = masks_base / f"mask_{n:04d}.tiff"
+    if not tiff_path.exists():
         raise HTTPException(404, "Mask not found")
     from io import BytesIO
-    from PIL import Image
-    img = Image.open(mask_path)
+    from PIL import Image as PILImage
+    img = PILImage.open(tiff_path)
     buf = BytesIO()
     img.save(buf, format="PNG")
+    with open(str(png_path), "wb") as f:
+        f.write(buf.getvalue())
     buf.seek(0)
     return StreamingResponse(buf, media_type="image/png")
 
@@ -263,7 +268,7 @@ async def trigger_mesh(job_id: str):
     if not MESHLIB_AVAILABLE:
         raise HTTPException(500, "meshlib not installed on server")
     try:
-        stl_path = generate_mesh(str(masks_dir))
+        stl_path = await asyncio.to_thread(generate_mesh, str(masks_dir))
         return {"stl_path": str(stl_path), "status": "ok"}
     except Exception as e:
         raise HTTPException(500, f"Mesh generation failed: {e}") from e
@@ -315,7 +320,7 @@ async def trigger_mesh_improved(job_id: str):
     if not IMPROVED_MESH_AVAILABLE:
         raise HTTPException(500, "Improved mesh dependencies not installed (scikit-image, trimesh)")
     try:
-        stl_path = generate_mesh_improved(str(masks_dir))
+        stl_path = await asyncio.to_thread(generate_mesh_improved, str(masks_dir))
         return {"stl_path": str(stl_path), "status": "ok"}
     except Exception as e:
         raise HTTPException(500, f"Improved mesh generation failed: {e}") from e
