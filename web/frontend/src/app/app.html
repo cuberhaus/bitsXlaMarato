@@ -16,6 +16,77 @@
 </header>
 
 <main class="main-content">
+  @if (serverStatus) {
+    <div class="compile-card" [class.compile-ready]="serverStatus.model_status === 'ready'">
+      <div class="compile-header">
+        @if (serverStatus.model_status === 'ready') {
+          <div class="compile-check">&#10003;</div>
+        } @else {
+          <div class="compile-spinner"></div>
+        }
+        <div>
+          <h2 class="compile-title">
+            @if (serverStatus.model_status === 'ready') {
+              Model optimized and ready
+            } @else if (serverStatus.model_status === 'warming_up') {
+              Warming up GPU...
+            } @else if (serverStatus.model_status === 'loading' || serverStatus.model_status === 'loaded') {
+              Loading model...
+            } @else {
+              Connecting to server...
+            }
+          </h2>
+          <p class="compile-subtitle">
+            @if (serverStatus.model_status === 'ready') {
+              {{ serverStatus.gpu_name }} &mdash; FP16 + batched pipeline
+            } @else {
+              One-time startup &mdash; {{ compileElapsed }}s elapsed
+            }
+          </p>
+        </div>
+      </div>
+
+      @if (serverStatus.model_status !== 'ready' && serverStatus.model_status_detail) {
+        <p class="compile-detail">{{ serverStatus.model_status_detail }}</p>
+      }
+
+      <div class="compile-steps">
+        <div class="step"
+             [class.done]="serverStatus.model_status !== 'loading' && serverStatus.model_status !== 'not_loaded'"
+             [class.active]="serverStatus.model_status === 'loading'">
+          <span class="step-icon">{{ serverStatus.model_status === 'loading' ? '&bull;' : (serverStatus.model_status === 'not_loaded' ? '' : '&#10003;') }}</span>
+          <span>Load model weights</span>
+        </div>
+        <div class="step"
+             [class.done]="serverStatus.model_status === 'warming_up' || serverStatus.model_status === 'ready'"
+             [class.active]="serverStatus.model_status === 'loaded'">
+          <span class="step-icon">{{ serverStatus.model_status === 'loaded' ? '&bull;' : (serverStatus.model_status === 'warming_up' || serverStatus.model_status === 'ready' ? '&#10003;' : '') }}</span>
+          <span>Transfer to GPU</span>
+        </div>
+        <div class="step"
+             [class.active]="serverStatus.model_status === 'warming_up'"
+             [class.done]="serverStatus.model_status === 'ready'">
+          <span class="step-icon">{{ serverStatus.model_status === 'warming_up' ? '&bull;' : (serverStatus.model_status === 'ready' ? '&#10003;' : '') }}</span>
+          <span>Warm up &amp; cuDNN autotuning</span>
+        </div>
+      </div>
+
+      <details class="compile-explain">
+        <summary>What is this?</summary>
+        <p>
+          The server loads the Mask R-CNN model onto your <strong>{{ serverStatus.gpu_name }}</strong>
+          and runs a warm-up pass to pre-allocate memory and let cuDNN auto-tune convolution algorithms
+          for the specific input sizes. This ensures the first real inference is just as fast as subsequent ones.
+        </p>
+        <p>
+          The pipeline uses <strong>FP16 mixed precision</strong> to leverage tensor cores,
+          <strong>batch processing</strong> (16 frames at a time), and a <strong>pipelined architecture</strong>
+          that overlaps disk I/O with GPU compute so the GPU is never idle.
+        </p>
+      </details>
+    </div>
+  }
+
   @if (!jobId) {
     <app-upload (jobStarted)="onJobStarted($event)"></app-upload>
   }

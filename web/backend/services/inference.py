@@ -30,6 +30,26 @@ model_status: str = "not_loaded"
 model_status_detail: str = ""
 
 
+def _auto_batch_size() -> int:
+    """Pick a batch size based on available GPU memory, or env override."""
+    env = os.environ.get("BATCH_SIZE")
+    if env:
+        return max(1, int(env))
+    if device.type != "cuda":
+        return 1
+    mem_gb = torch.cuda.get_device_properties(device).total_memory / (1024 ** 3)
+    if mem_gb >= 12:
+        return 16
+    if mem_gb >= 8:
+        return 8
+    if mem_gb >= 4:
+        return 4
+    return 2
+
+
+BATCH_SIZE: int = _auto_batch_size()
+
+
 def load_model(model_path: str) -> None:
     global _model, model_status, model_status_detail
     model_status = "loading"
@@ -52,8 +72,8 @@ def warmup_model() -> None:
 
     model_status = "warming_up"
     model_status_detail = "Warm-up pass (cuDNN autotuning)..."
-    print("[inference] Warmup: running warm-up batch...")
-    dummy = [torch.randn(3, 296, 472, device=device) for _ in range(16)]
+    print(f"[inference] Warmup: running warm-up batch (batch_size={BATCH_SIZE})...")
+    dummy = [torch.randn(3, 296, 472, device=device) for _ in range(BATCH_SIZE)]
     with torch.inference_mode(), torch.amp.autocast("cuda"):
         try:
             _model(dummy)
@@ -65,7 +85,7 @@ def warmup_model() -> None:
 
     model_status = "ready"
     model_status_detail = ""
-    print("[inference] Warmup complete — model ready")
+    print(f"[inference] Warmup complete — model ready (batch_size={BATCH_SIZE})")
 
 
 def get_model() -> torch.nn.Module:
@@ -238,7 +258,7 @@ def run_inference(
     frames_dir: str,
     output_dir: str,
     confidence: float = 0.9,
-    batch_size: int = 16,
+    batch_size: int = BATCH_SIZE,
 ) -> Generator[tuple[int, int], None, None]:
     """Run pipelined batched inference on all frames.
 

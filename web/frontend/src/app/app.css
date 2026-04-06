@@ -94,6 +94,151 @@
   margin-bottom: 14px;
 }
 
+.compile-card {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.compile-card.compile-ready {
+  border-color: rgba(78, 205, 196, 0.15);
+}
+
+.compile-ready .compile-title {
+  color: #4ecdc4;
+}
+
+.compile-ready .step.done {
+  color: var(--text-muted);
+}
+
+.compile-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(78, 205, 196, 0.15);
+  color: #4ecdc4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.compile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.compile-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid rgba(78, 205, 196, 0.2);
+  border-top-color: #4ecdc4;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.compile-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4ecdc4;
+  margin: 0;
+}
+
+.compile-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+  font-family: var(--font-mono);
+}
+
+.compile-detail {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+  font-family: var(--font-mono);
+  padding-left: 38px;
+}
+
+.compile-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 38px;
+  margin-bottom: 14px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.step.active {
+  color: #4ecdc4;
+  font-weight: 500;
+}
+
+.step.done {
+  color: var(--text-secondary);
+}
+
+.step-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.step.active .step-icon {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.compile-explain {
+  padding-left: 38px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.compile-explain summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.compile-explain summary:hover {
+  color: var(--text-primary);
+}
+
+.compile-explain p {
+  margin: 8px 0 0;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.compile-explain code {
+  background: var(--bg-tertiary);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.76rem;
+}
+
 .error-bar {
   display: flex;
   align-items: center;

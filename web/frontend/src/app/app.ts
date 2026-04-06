@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { UploadComponent } from './components/upload/upload';
 import { JobStatusComponent } from './components/job-status/job-status';
 import { FrameViewerComponent } from './components/frame-viewer/frame-viewer';
@@ -19,16 +19,40 @@ import { ApiService, ServerStatus } from './services/api';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   jobId = '';
   processing = false;
   selectedFrame = 0;
   errorMessage = '';
   serverStatus: ServerStatus | null = null;
+  compileElapsed = 0;
+  private statusPoll: ReturnType<typeof setInterval> | null = null;
+  private timer: ReturnType<typeof setInterval> | null = null;
 
   constructor(private api: ApiService) {
+    this.fetchStatus();
+    this.statusPoll = setInterval(() => this.fetchStatus(), 2000);
+    this.timer = setInterval(() => {
+      if (this.serverStatus && this.serverStatus.model_status !== 'ready') {
+        this.compileElapsed++;
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.statusPoll) clearInterval(this.statusPoll);
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  private fetchStatus() {
     this.api.getServerStatus().subscribe({
-      next: (s) => (this.serverStatus = s),
+      next: (s) => {
+        this.serverStatus = s;
+        if (s.model_status === 'ready') {
+          if (this.statusPoll) { clearInterval(this.statusPoll); this.statusPoll = null; }
+          if (this.timer) { clearInterval(this.timer); this.timer = null; }
+        }
+      },
     });
   }
 
