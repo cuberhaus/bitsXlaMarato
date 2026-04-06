@@ -1,27 +1,83 @@
-"""Inference service: video frame extraction, Mask R-CNN segmentation, video composition."""
+"""Inference service: video frame extraction, Mask R-CNN segmentation, video composition.
+
+Optimized for high-end GPUs (e.g. RTX 5090) with:
+- torch.compile for fused kernels
+- AMP (float16) for tensor-core throughput
+- Pipelined I/O: decode, GPU forward, and disk writes overlap via ThreadPoolExecutor
+- Pinned-memory + non_blocking transfers for fast CPU->GPU DMA
+- Large batch sizes to saturate GPU compute
+"""
 
 from __future__ import annotations
 
 import os
+from concurrent.futures import Future, ThreadPoolExecutor
 from glob import glob
 from typing import Generator, Optional
 
 import cv2
 import numpy as np
 import torch
-import torchvision.transforms as T
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+_use_amp = device.type == "cuda"
 
 _model: Optional[torch.nn.Module] = None
-_to_tensor = T.ToTensor()
+model_status: str = "not_loaded"
+model_status_detail: str = ""
 
 
 def load_model(model_path: str) -> None:
-    global _model
+    global _model, model_status, model_status_detail
+    model_status = "loading"
+    model_status_detail = "Loading model weights from disk..."
     _model = torch.load(model_path, map_location=device, weights_only=False)
     _model.eval()
+    model_status_detail = "Transferring model to GPU..."
     _model.to(device)
+    if device.type == "cuda":
+        try:
+            model_status_detail = "Registering torch.compile graph..."
+            _model = torch.compile(_model, mode="reduce-overhead")
+            print("[inference] torch.compile applied (reduce-overhead)")
+        except Exception as e:
+            print(f"[inference] torch.compile skipped: {e}")
+    model_status = "loaded"
+    model_status_detail = "Model loaded, waiting for warmup..."
+
+
+def warmup_model() -> None:
+    """Run dummy forward passes to trigger torch.compile JIT and cuDNN autotuning.
+
+    Uses the same batch size and image dimensions as real inference so CUDA graphs,
+    cuDNN plans, and memory allocations are all pre-warmed.
+    """
+    global model_status, model_status_detail
+    if _model is None or device.type != "cuda":
+        model_status = "ready"
+        model_status_detail = ""
+        return
+
+    model_status = "compiling"
+    batch_size = 16
+    dummy_batch = [torch.randn(3, 296, 472, device=device) for _ in range(batch_size)]
+
+    for i in range(3):
+        model_status_detail = f"Warmup pass {i + 1}/3 (batch of {batch_size})..."
+        print(f"[inference] Warmup pass {i + 1}/3...")
+        with torch.inference_mode(), torch.amp.autocast("cuda"):
+            try:
+                _model(dummy_batch)
+            except Exception:
+                pass
+        torch.cuda.synchronize()
+
+    del dummy_batch
+    torch.cuda.empty_cache()
+
+    model_status = "ready"
+    model_status_detail = ""
+    print("[inference] Warmup complete — model compiled and ready")
 
 
 def get_model() -> torch.nn.Module:
@@ -54,6 +110,10 @@ def extract_frames(
     cap.release()
     return count
 
+
+# ---------------------------------------------------------------------------
+# Prediction helpers
+# ---------------------------------------------------------------------------
 
 def _get_coloured_mask(mask: np.ndarray) -> np.ndarray:
     r = np.zeros_like(mask, dtype=np.uint8)
@@ -108,16 +168,79 @@ def _create_overlay(
     return overlay, rgb_mask
 
 
+# ---------------------------------------------------------------------------
+# Pipeline stage functions (run in ThreadPoolExecutor)
+# ---------------------------------------------------------------------------
+
+def _decode_batch(paths: list[str]) -> tuple[list[np.ndarray], list[torch.Tensor]]:
+    """Stage 1: decode images from disk and build pinned-memory tensors."""
+    images_rgb: list[np.ndarray] = []
+    tensors: list[torch.Tensor] = []
+    for p in paths:
+        bgr = cv2.imread(p)
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        images_rgb.append(rgb)
+        t = torch.from_numpy(rgb.transpose(2, 0, 1).copy()).float().div_(255.0)
+        if device.type == "cuda":
+            t = t.pin_memory()
+        tensors.append(t)
+    return images_rgb, tensors
+
+
+def _postprocess_and_write(
+    batch_indices: list[int],
+    images_rgb: list[np.ndarray],
+    predictions: list[dict],
+    confidence: float,
+    overlays_dir: str,
+    masks_dir: str,
+) -> int:
+    """Stage 3: create overlays, write overlay/mask files. Returns error count."""
+    errors = 0
+    for j, pred in enumerate(predictions):
+        idx = batch_indices[j]
+        try:
+            m, _, _ = _process_prediction(pred, confidence)
+            overlay, mask = _create_overlay(images_rgb[j], m)
+            cv2.imwrite(
+                os.path.join(overlays_dir, f"overlay_{idx:04d}.jpg"),
+                cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR),
+            )
+            if mask is not None:
+                cv2.imwrite(os.path.join(masks_dir, f"mask_{idx:04d}.tiff"), mask)
+                cv2.imwrite(os.path.join(masks_dir, f"mask_{idx:04d}.png"), mask)
+        except Exception as e:
+            errors += 1
+            print(f"[frame {idx}] skipped: {e}")
+            if j < len(images_rgb) and images_rgb[j] is not None:
+                cv2.imwrite(
+                    os.path.join(overlays_dir, f"overlay_{idx:04d}.jpg"),
+                    cv2.cvtColor(images_rgb[j], cv2.COLOR_RGB2BGR),
+                )
+    return errors
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
 def segment_frame(
     img_path: str, model: torch.nn.Module, confidence: float = 0.9
 ) -> tuple[np.ndarray, Optional[np.ndarray]]:
     """Segment a single frame. Returns (overlay_image, rgb_mask_or_None)."""
     img_bgr = cv2.imread(img_path)
     img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-    tensor = _to_tensor(img_rgb).to(device)
+    t = torch.from_numpy(img_rgb.transpose(2, 0, 1).copy()).float().div_(255.0)
+    if device.type == "cuda":
+        t = t.pin_memory()
+    tensor = t.to(device, non_blocking=True)
 
     with torch.inference_mode():
-        pred = model([tensor])
+        if _use_amp:
+            with torch.amp.autocast("cuda"):
+                pred = model([tensor])
+        else:
+            pred = model([tensor])
 
     masks, boxes, labels = _process_prediction(pred[0], confidence)
     return _create_overlay(img_rgb, masks)
@@ -127,12 +250,16 @@ def run_inference(
     frames_dir: str,
     output_dir: str,
     confidence: float = 0.9,
-    batch_size: int = 4,
+    batch_size: int = 16,
 ) -> Generator[tuple[int, int], None, None]:
-    """Run batched inference on all frames. Yields (current, total) for progress.
+    """Run pipelined batched inference on all frames.
 
-    Processes frames in batches for better GPU throughput. Each image is decoded
-    once (cv2) and reused for both tensor conversion and overlay creation.
+    Three-stage pipeline overlapping CPU I/O with GPU compute:
+      Stage 1 (thread pool): decode next batch from disk + build tensors
+      Stage 2 (main thread): GPU forward pass on current batch (AMP float16)
+      Stage 3 (thread pool): post-process + write results for previous batch
+
+    Yields (current_frame, total_frames) for progress reporting.
     """
     model = get_model()
     masks_dir = os.path.join(output_dir, "masks")
@@ -142,66 +269,80 @@ def run_inference(
 
     frames = sorted(glob(os.path.join(frames_dir, "*.jpg")))
     total = len(frames)
+    if total == 0:
+        return
+
+    batches: list[list[str]] = []
+    for i in range(0, total, batch_size):
+        batches.append(frames[i : i + batch_size])
+    num_batches = len(batches)
+
     errors = 0
+    write_future: Optional[Future] = None
+    progress_count = 0
 
-    with torch.inference_mode():
-        for batch_start in range(0, total, batch_size):
-            batch_end = min(batch_start + batch_size, total)
-            batch_paths = frames[batch_start:batch_end]
+    with ThreadPoolExecutor(max_workers=4) as pool, torch.inference_mode():
+        decode_future = pool.submit(_decode_batch, batches[0])
 
-            images_bgr = []
-            images_rgb = []
-            tensors = []
-            for path in batch_paths:
-                img_bgr = cv2.imread(path)
-                img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-                images_bgr.append(img_bgr)
-                images_rgb.append(img_rgb)
-                tensors.append(_to_tensor(img_rgb).to(device))
+        for b in range(num_batches):
+            images_rgb, tensors = decode_future.result()
+
+            if b + 1 < num_batches:
+                decode_future = pool.submit(_decode_batch, batches[b + 1])
+
+            gpu_tensors = [t.to(device, non_blocking=True) for t in tensors]
+            if device.type == "cuda":
+                torch.cuda.synchronize()
 
             try:
-                predictions = model(tensors)
+                if _use_amp:
+                    with torch.amp.autocast("cuda"):
+                        predictions = model(gpu_tensors)
+                else:
+                    predictions = model(gpu_tensors)
             except Exception as e:
-                for j, path in enumerate(batch_paths):
+                batch_start = b * batch_size
+                for j in range(len(batches[b])):
                     idx = batch_start + j
                     errors += 1
                     print(f"[frame {idx}] batch failed: {e}")
-                    if j < len(images_bgr) and images_bgr[j] is not None:
+                    if j < len(images_rgb) and images_rgb[j] is not None:
                         cv2.imwrite(
                             os.path.join(overlays_dir, f"overlay_{idx:04d}.jpg"),
-                            images_bgr[j],
+                            cv2.cvtColor(images_rgb[j], cv2.COLOR_RGB2BGR),
                         )
-                    yield (idx + 1, total)
-                del tensors
+                    progress_count += 1
+                    yield (progress_count, total)
+                del gpu_tensors
                 continue
 
-            for j, pred in enumerate(predictions):
-                idx = batch_start + j
-                try:
-                    masks, boxes, labels = _process_prediction(pred, confidence)
-                    overlay, mask = _create_overlay(images_rgb[j], masks)
-                    cv2.imwrite(
-                        os.path.join(overlays_dir, f"overlay_{idx:04d}.jpg"),
-                        cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR),
-                    )
-                    if mask is not None:
-                        cv2.imwrite(
-                            os.path.join(masks_dir, f"mask_{idx:04d}.tiff"), mask
-                        )
-                        cv2.imwrite(
-                            os.path.join(masks_dir, f"mask_{idx:04d}.png"), mask
-                        )
-                except Exception as e:
-                    errors += 1
-                    print(f"[frame {idx}] skipped: {e}")
-                    if j < len(images_bgr) and images_bgr[j] is not None:
-                        cv2.imwrite(
-                            os.path.join(overlays_dir, f"overlay_{idx:04d}.jpg"),
-                            images_bgr[j],
-                        )
-                yield (idx + 1, total)
+            cpu_preds = [
+                {k: v.detach().cpu() for k, v in p.items()} for p in predictions
+            ]
+            del gpu_tensors, predictions
 
-            del tensors, predictions
+            if write_future is not None:
+                errs = write_future.result()
+                errors += errs
+
+            batch_start = b * batch_size
+            batch_indices = list(range(batch_start, batch_start + len(batches[b])))
+            write_future = pool.submit(
+                _postprocess_and_write,
+                batch_indices,
+                images_rgb,
+                cpu_preds,
+                confidence,
+                overlays_dir,
+                masks_dir,
+            )
+
+            progress_count += len(batches[b])
+            yield (progress_count, total)
+
+        if write_future is not None:
+            errs = write_future.result()
+            errors += errs
 
     if errors:
         print(f"Inference done with {errors}/{total} frame(s) skipped due to errors.")

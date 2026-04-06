@@ -16,6 +16,78 @@
 </header>
 
 <main class="main-content">
+  @if (serverStatus) {
+    <div class="compile-card" [class.compile-ready]="serverStatus.model_status === 'ready'">
+      <div class="compile-header">
+        @if (serverStatus.model_status === 'ready') {
+          <div class="compile-check">&#10003;</div>
+        } @else {
+          <div class="compile-spinner"></div>
+        }
+        <div>
+          <h2 class="compile-title">
+            @if (serverStatus.model_status === 'ready') {
+              Model optimized and ready
+            } @else if (serverStatus.model_status === 'compiling') {
+              Compiling GPU kernels...
+            } @else if (serverStatus.model_status === 'loading' || serverStatus.model_status === 'loaded') {
+              Loading model...
+            } @else {
+              Connecting to server...
+            }
+          </h2>
+          <p class="compile-subtitle">
+            @if (serverStatus.model_status === 'ready') {
+              {{ serverStatus.gpu_name }} &mdash; torch.compile + FP16 + batched pipeline
+            } @else {
+              One-time startup optimization &mdash; {{ compileElapsed }}s elapsed
+            }
+          </p>
+        </div>
+      </div>
+
+      @if (serverStatus.model_status !== 'ready' && serverStatus.model_status_detail) {
+        <p class="compile-detail">{{ serverStatus.model_status_detail }}</p>
+      }
+
+      <div class="compile-steps">
+        <div class="step"
+             [class.done]="serverStatus.model_status !== 'loading' && serverStatus.model_status !== 'not_loaded'"
+             [class.active]="serverStatus.model_status === 'loading'">
+          <span class="step-icon">{{ serverStatus.model_status === 'loading' ? '&bull;' : (serverStatus.model_status === 'not_loaded' ? '' : '&#10003;') }}</span>
+          <span>Load model weights</span>
+        </div>
+        <div class="step"
+             [class.done]="serverStatus.model_status === 'compiling' || serverStatus.model_status === 'ready'"
+             [class.active]="serverStatus.model_status === 'loaded'">
+          <span class="step-icon">{{ serverStatus.model_status === 'loaded' ? '&bull;' : (serverStatus.model_status === 'compiling' || serverStatus.model_status === 'ready' ? '&#10003;' : '') }}</span>
+          <span>Transfer to GPU</span>
+        </div>
+        <div class="step"
+             [class.active]="serverStatus.model_status === 'compiling'"
+             [class.done]="serverStatus.model_status === 'ready'">
+          <span class="step-icon">{{ serverStatus.model_status === 'compiling' ? '&bull;' : (serverStatus.model_status === 'ready' ? '&#10003;' : '') }}</span>
+          <span>JIT compile &amp; optimize</span>
+        </div>
+      </div>
+
+      <details class="compile-explain">
+        <summary>What is this?</summary>
+        <p>
+          <code>torch.compile</code> analyzes the neural network and fuses multiple GPU operations
+          into optimized CUDA kernels tailored to your <strong>{{ serverStatus.gpu_name }}</strong>.
+          This makes inference significantly faster (up to 2x) but requires a one-time compilation
+          pass after the server starts. Once compiled, all video uploads benefit from the optimized kernels.
+        </p>
+        <p>
+          The pipeline also uses <strong>FP16 mixed precision</strong> to leverage your GPU's tensor cores,
+          <strong>batch processing</strong> (16 frames at a time), and a <strong>pipelined architecture</strong>
+          that overlaps disk I/O with GPU compute so the GPU is never idle.
+        </p>
+      </details>
+    </div>
+  }
+
   @if (!jobId) {
     <app-upload (jobStarted)="onJobStarted($event)"></app-upload>
   }

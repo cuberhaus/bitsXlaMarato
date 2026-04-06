@@ -42,6 +42,8 @@ export interface ServerStatus {
   gpu_name: string | null;
   device: string;
   meshlib_available: boolean;
+  model_status: string;
+  model_status_detail: string;
   active_jobs: number;
 }
 

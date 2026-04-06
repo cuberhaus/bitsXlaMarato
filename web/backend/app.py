@@ -26,13 +26,17 @@ from fastapi.staticfiles import StaticFiles
 try:
     from services.inference import (
         load_model,
+        warmup_model,
         extract_frames,
         run_inference,
         compose_video,
+        model_status as _unused,
     )
+    import services.inference as _inference_mod
     INFERENCE_AVAILABLE = True
 except ImportError:
     INFERENCE_AVAILABLE = False
+    _inference_mod = None
 
 try:
     from services.mesh import generate_mesh, MESHLIB_AVAILABLE
@@ -68,6 +72,8 @@ async def lifespan(app: FastAPI):
         try:
             load_model(str(model_path))
             print(f"Model loaded from {model_path}")
+            thread = threading.Thread(target=warmup_model, daemon=True)
+            thread.start()
         except Exception as e:
             print(f"Warning: Failed to load model: {e}")
     else:
@@ -341,12 +347,19 @@ async def get_mesh_improved(job_id: str):
 @app.get("/api/status")
 async def server_status():
     gpu = TORCH_AVAILABLE and torch.cuda.is_available()
+    ms = "not_loaded"
+    msd = ""
+    if _inference_mod is not None:
+        ms = _inference_mod.model_status
+        msd = _inference_mod.model_status_detail
     return {
         "gpu_available": gpu,
         "gpu_name": torch.cuda.get_device_name(0) if gpu else None,
         "device": str(torch.device("cuda" if gpu else "cpu")) if TORCH_AVAILABLE else "unavailable",
         "meshlib_available": MESHLIB_AVAILABLE,
         "inference_available": INFERENCE_AVAILABLE,
+        "model_status": ms,
+        "model_status_detail": msd,
         "active_jobs": len([j for j in jobs.values() if j["state"] not in ("done", "error")]),
     }
 
