@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { UploadComponent } from './components/upload/upload';
 import { JobStatusComponent } from './components/job-status/job-status';
 import { FrameViewerComponent } from './components/frame-viewer/frame-viewer';
@@ -19,47 +19,16 @@ import { ApiService, ServerStatus } from './services/api';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent {
   jobId = '';
   processing = false;
   selectedFrame = 0;
   errorMessage = '';
   serverStatus: ServerStatus | null = null;
-  compileElapsed = 0;
-  private poll: ReturnType<typeof setInterval> | null = null;
-  private timer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef, private zone: NgZone) {
-    this.zone.runOutsideAngular(() => {
-      this.timer = setInterval(() => {
-        if (this.serverStatus && this.serverStatus.model_status !== 'ready') {
-          this.compileElapsed++;
-          this.zone.run(() => this.cdr.detectChanges());
-        }
-      }, 1000);
-      this.poll = setInterval(() => this.fetchStatus(), 2000);
-    });
-    this.fetchStatus();
-  }
-
-  ngOnDestroy() {
-    if (this.poll) clearInterval(this.poll);
-    if (this.timer) clearInterval(this.timer);
-  }
-
-  private fetchStatus() {
+  constructor(private api: ApiService) {
     this.api.getServerStatus().subscribe({
-      next: (s) => {
-        this.zone.run(() => {
-          this.serverStatus = s;
-          this.cdr.detectChanges();
-          if (s.model_status === 'ready') {
-            if (this.poll) { clearInterval(this.poll); this.poll = null; }
-            if (this.timer) { clearInterval(this.timer); this.timer = null; }
-          }
-        });
-      },
-      error: () => {},
+      next: (s) => (this.serverStatus = s),
     });
   }
 

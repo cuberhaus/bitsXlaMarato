@@ -54,6 +54,8 @@ This starts the FastAPI backend on `:8001` and the Angular frontend on `:4200`. 
 | `make clean-jobs` | Remove processed job data |
 | `make clean` | Remove all generated files |
 
+For technical notes on the GPU inference pipeline optimizations, see [PERFORMANCE.md](PERFORMANCE.md).
+
 ## What's next for Aneurism detection with MarkRCNN
 We are giving the challengers the trained model, which they can reuse. This would prove useful if they mark the frames of the ecographies, because even though we asked for help, they are professionals and can read an ecography proficiently.
 Also, we are giving them a GUI and all the scripts used for the application.

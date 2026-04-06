@@ -1,11 +1,14 @@
 """Inference service: video frame extraction, Mask R-CNN segmentation, video composition.
 
 Optimized for high-end GPUs (e.g. RTX 5090) with:
-- torch.compile for fused kernels
 - AMP (float16) for tensor-core throughput
 - Pipelined I/O: decode, GPU forward, and disk writes overlap via ThreadPoolExecutor
 - Pinned-memory + non_blocking transfers for fast CPU->GPU DMA
 - Large batch sizes to saturate GPU compute
+
+Note: torch.compile is NOT used here. Mask R-CNN's dynamic-shape outputs (varying
+proposal counts, Tensor.item() calls in post-processing) cause graph breaks and
+recompilation storms that make compiled mode ~10x slower than eager.
 """
 
 from __future__ import annotations
@@ -35,49 +38,34 @@ def load_model(model_path: str) -> None:
     _model.eval()
     model_status_detail = "Transferring model to GPU..."
     _model.to(device)
-    if device.type == "cuda":
-        try:
-            model_status_detail = "Registering torch.compile graph..."
-            _model = torch.compile(_model, mode="reduce-overhead")
-            print("[inference] torch.compile applied (reduce-overhead)")
-        except Exception as e:
-            print(f"[inference] torch.compile skipped: {e}")
     model_status = "loaded"
     model_status_detail = "Model loaded, waiting for warmup..."
 
 
 def warmup_model() -> None:
-    """Run dummy forward passes to trigger torch.compile JIT and cuDNN autotuning.
-
-    Uses the same batch size and image dimensions as real inference so CUDA graphs,
-    cuDNN plans, and memory allocations are all pre-warmed.
-    """
+    """Run a single warm-up forward pass to pre-allocate GPU memory and warm cuDNN."""
     global model_status, model_status_detail
     if _model is None or device.type != "cuda":
         model_status = "ready"
         model_status_detail = ""
         return
 
-    model_status = "compiling"
-    batch_size = 16
-    dummy_batch = [torch.randn(3, 296, 472, device=device) for _ in range(batch_size)]
-
-    for i in range(3):
-        model_status_detail = f"Warmup pass {i + 1}/3 (batch of {batch_size})..."
-        print(f"[inference] Warmup pass {i + 1}/3...")
-        with torch.inference_mode(), torch.amp.autocast("cuda"):
-            try:
-                _model(dummy_batch)
-            except Exception:
-                pass
-        torch.cuda.synchronize()
-
-    del dummy_batch
+    model_status = "warming_up"
+    model_status_detail = "Warm-up pass (cuDNN autotuning)..."
+    print("[inference] Warmup: running warm-up batch...")
+    dummy = [torch.randn(3, 296, 472, device=device) for _ in range(16)]
+    with torch.inference_mode(), torch.amp.autocast("cuda"):
+        try:
+            _model(dummy)
+        except Exception:
+            pass
+    torch.cuda.synchronize()
+    del dummy
     torch.cuda.empty_cache()
 
     model_status = "ready"
     model_status_detail = ""
-    print("[inference] Warmup complete — model compiled and ready")
+    print("[inference] Warmup complete — model ready")
 
 
 def get_model() -> torch.nn.Module:
