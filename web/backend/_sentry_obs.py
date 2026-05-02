@@ -64,6 +64,39 @@ class JsonLineHandler(logging.Handler):
             pass
 
 
+def _make_service_tagger(service: str):
+    """Return a `before_send` hook that stamps `tags.service = <slug>`
+    on every event/transaction.
+
+    Why a hook instead of `sentry_sdk.set_tag()`?
+
+    `set_tag` writes to the *current* scope. In sentry-sdk 2.0–2.20 the
+    ASGI / WSGI integrations fork a fresh isolation scope per request
+    that does **not** inherit init-time tags, so the slug never reaches
+    transaction events. The hook runs at envelope creation, after every
+    scope merge, so the tag is guaranteed to land on the wire payload
+    regardless of SDK version (1.x, 2.x — old or new).
+
+    Wire format note: events use `tags` as a list of [key, value] pairs
+    (per Sentry's protocol) but some integrations preserve the dict form
+    `{key: value}`. Handle both.
+    """
+
+    def _hook(event, _hint):
+        tags = event.setdefault("tags", [])
+        if isinstance(tags, list):
+            if not any(
+                isinstance(t, (list, tuple)) and len(t) >= 1 and t[0] == "service"
+                for t in tags
+            ):
+                tags.append(["service", service])
+        elif isinstance(tags, dict):
+            tags.setdefault("service", service)
+        return event
+
+    return _hook
+
+
 def init_observability(service: str) -> None:
     """Initialise Sentry SDK + JSON-line stdout logging.
 
@@ -78,6 +111,7 @@ def init_observability(service: str) -> None:
         try:
             import sentry_sdk  # type: ignore[import-not-found]
 
+            tagger = _make_service_tagger(service)
             sentry_sdk.init(
                 dsn=dsn,
                 environment=os.environ.get("SENTRY_ENVIRONMENT", "local-dev"),
@@ -86,6 +120,8 @@ def init_observability(service: str) -> None:
                     os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0"),
                 ),
                 send_default_pii=False,
+                before_send=tagger,
+                before_send_transaction=tagger,
             )
             sentry_sdk.set_tag("service", service)
         except ImportError:
