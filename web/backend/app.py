@@ -3,8 +3,18 @@
 from __future__ import annotations
 
 # ── Phase 14 (Option A) — Sentry SDK + JSON-line stdout (no-op if missing) ─
+# Use an absolute import (not relative) so this works whether the module is
+# loaded as a package member OR as `__main__` via `uvicorn app:app`. With a
+# relative `from ._sentry_obs import …` and no enclosing package, Python
+# raises ImportError, which the bare `except ImportError` silently swallows
+# and the SDK never initialises (no events ever reach Sentry). The
+# `sys.path` injection makes `_sentry_obs.py` resolvable regardless of cwd.
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 try:
-    from ._sentry_obs import init_observability  # type: ignore[import-not-found]
+    from _sentry_obs import init_observability  # type: ignore[import-not-found]
 
     init_observability(service="bitsx-marato")
 except ImportError:
