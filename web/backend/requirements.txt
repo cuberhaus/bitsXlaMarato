@@ -10,3 +10,4 @@ python-multipart==0.0.22
 scikit-image==0.25.0
 scipy==1.15.3
 trimesh==4.11.5
+sentry-sdk[fastapi]==2.18.0
