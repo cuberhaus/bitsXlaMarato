@@ -15,11 +15,13 @@ services:
     environment:
       - BATCH_SIZE=${BATCH_SIZE:-16}
       # Phase 14 / Option A — propagated by PersonalPortfolio/.env.shared
-      - SENTRY_DSN=${SENTRY_DSN:-}
+      - SENTRY_DSN=${SENTRY_DSN_DOCKER:-${SENTRY_DSN:-}}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-local-dev}
       - SENTRY_TRACES_SAMPLE_RATE=${SENTRY_TRACES_SAMPLE_RATE:-1.0}
       - SENTRY_RELEASE=${SENTRY_RELEASE:-local-dev}
       - PYTHONUNBUFFERED=1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   jobs:
