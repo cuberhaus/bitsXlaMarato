@@ -14,11 +14,34 @@ import sys as _sys
 
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 try:
-    from _sentry_obs import init_observability  # type: ignore[import-not-found]
+    from _sentry_obs import (  # type: ignore[import-not-found]
+        init_observability,
+        breadcrumb as _crumb,
+        span as _span,
+        tag as _tag,
+        SessionIdMiddleware as _SessionIdMiddleware,
+    )
 
     init_observability(service="bitsx-marato")
 except ImportError:
-    pass
+    from contextlib import contextmanager
+
+    def _tag(*_a, **_kw):
+        return None
+
+    def _crumb(*_a, **_kw):
+        return None
+
+    @contextmanager
+    def _span(*_a, **_kw):
+        yield None
+
+    class _SessionIdMiddleware:  # type: ignore[no-redef]
+        def __init__(self, app):
+            self.app = app
+
+        async def __call__(self, scope, receive, send):
+            await self.app(scope, receive, send)
 
 import asyncio
 import json
@@ -105,6 +128,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="bitsXlaMarato - Aorta Segmentation", lifespan=lifespan)
+app.add_middleware(_SessionIdMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -123,27 +147,42 @@ def _run_job(job_id: str, video_path: str, confidence: float, crop_roi: Optional
     try:
         job["state"] = "extracting"
         job["message"] = "Extracting frames from video..."
-        n_frames = extract_frames(video_path, frames_dir, crop_roi)
+        with _span(
+            "cv.frames",
+            description="extract frames",
+            crop_roi=str(crop_roi) if crop_roi else None,
+        ):
+            n_frames = extract_frames(video_path, frames_dir, crop_roi)
         job["total"] = n_frames
         job["message"] = f"Extracted {n_frames} frames"
+        _crumb("pipeline", f"frames extracted: {n_frames}", job_id=job_id, n_frames=n_frames)
 
         job["state"] = "inferring"
         job["progress"] = 0
-        for current, total in run_inference(frames_dir, output_dir, confidence):
-            job["progress"] = current
-            job["total"] = total
-            job["message"] = f"Processing frame {current}/{total}"
+        with _span(
+            "ml.infer",
+            description=f"YOLO segmentation × {n_frames} frames",
+            n_frames=n_frames, confidence=confidence,
+            model=active_model_name,
+        ):
+            for current, total in run_inference(frames_dir, output_dir, confidence):
+                job["progress"] = current
+                job["total"] = total
+                job["message"] = f"Processing frame {current}/{total}"
 
         job["state"] = "composing"
         job["message"] = "Composing output video..."
         overlays_dir = os.path.join(output_dir, "overlays")
-        compose_video(overlays_dir, str(job_dir / "output" / "result.avi"))
+        with _span("video.encode", description="compose AVI", overlays_dir=overlays_dir):
+            compose_video(overlays_dir, str(job_dir / "output" / "result.avi"))
 
         job["state"] = "done"
         job["message"] = "Processing complete"
+        _crumb("pipeline", "job complete", job_id=job_id)
     except Exception as e:
         job["state"] = "error"
         job["message"] = str(e)
+        _crumb("pipeline", "job failed", level="error", job_id=job_id, error=str(e))
 
 
 @app.post("/api/upload")
@@ -165,6 +204,19 @@ async def upload_video(
         raise HTTPException(500, "Inference unavailable: torch/torchvision not installed")
 
     crop_roi = DEFAULT_CROP if use_crop else None
+
+    _tag("job_id", job_id)
+    _tag("model", active_model_name)
+    _tag("confidence", confidence)
+    _tag("roi_size", "crop" if use_crop else "full")
+    _crumb(
+        "upload", "upload received",
+        job_id=job_id,
+        filename=file.filename,
+        size_bytes=os.path.getsize(video_path),
+        confidence=confidence,
+        use_crop=use_crop,
+    )
 
     jobs[job_id] = {
         "state": "uploading",
@@ -289,13 +341,16 @@ async def get_video(job_id: str):
 
 @app.post("/api/jobs/{job_id}/mesh")
 async def trigger_mesh(job_id: str):
+    _tag("job_id", job_id)
+    _crumb("mesh", "mesh action: standard", job_id=job_id)
     masks_dir = JOBS_DIR / job_id / "output" / "masks"
     if not masks_dir.exists():
         raise HTTPException(404, "Masks not found. Run inference first.")
     if not MESHLIB_AVAILABLE:
         raise HTTPException(500, "meshlib not installed on server")
     try:
-        stl_path = await asyncio.to_thread(generate_mesh, str(masks_dir))
+        with _span("mesh.build", description="meshlib STL", job_id=job_id):
+            stl_path = await asyncio.to_thread(generate_mesh, str(masks_dir))
         return {"stl_path": str(stl_path), "status": "ok"}
     except Exception as e:
         raise HTTPException(500, f"Mesh generation failed: {e}") from e
@@ -341,13 +396,16 @@ async def get_diameter_improved(job_id: str, n: int, pixel_scale: float = Query(
 
 @app.post("/api/jobs/{job_id}/mesh-improved")
 async def trigger_mesh_improved(job_id: str):
+    _tag("job_id", job_id)
+    _crumb("mesh", "mesh action: improved", job_id=job_id)
     masks_dir = JOBS_DIR / job_id / "output" / "masks"
     if not masks_dir.exists():
         raise HTTPException(404, "Masks not found. Run inference first.")
     if not IMPROVED_MESH_AVAILABLE:
         raise HTTPException(500, "Improved mesh dependencies not installed (scikit-image, trimesh)")
     try:
-        stl_path = await asyncio.to_thread(generate_mesh_improved, str(masks_dir))
+        with _span("mesh.improve", description="scikit-image + trimesh STL", job_id=job_id):
+            stl_path = await asyncio.to_thread(generate_mesh_improved, str(masks_dir))
         return {"stl_path": str(stl_path), "status": "ok"}
     except Exception as e:
         raise HTTPException(500, f"Improved mesh generation failed: {e}") from e
@@ -394,8 +452,11 @@ async def switch_model(body: dict):
     if not INFERENCE_AVAILABLE:
         raise HTTPException(500, "Inference unavailable: torch/torchvision not installed")
 
+    _tag("model", name)
+    _crumb("model", "model switch", from_=active_model_name, to=name)
     try:
-        load_model(str(model_path))
+        with _span("model.switch", description=name, model=name):
+            load_model(str(model_path))
         active_model_name = name
         thread = threading.Thread(target=warmup_model, daemon=True)
         thread.start()
