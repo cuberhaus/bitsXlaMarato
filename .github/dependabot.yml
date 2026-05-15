@@ -1,0 +1,66 @@
+# Weekly Dependabot scans against main. Each PR runs the existing CI
+# (test.yml) so a bump that breaks the build never lands. Major-version
+# bumps ignored — those need a focused PR with manual review.
+
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+
+  - package-ecosystem: pip
+    directory: /web/backend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+
+  - package-ecosystem: npm
+    directory: /web/frontend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(ci)
+      include: scope
+    labels:
+      - dependencies
+      - ci
