@@ -31,6 +31,14 @@ No automated test suite exists.
 - Long jobs (mesh generation, inference) must be offloaded via `asyncio.to_thread()` to keep the FastAPI event loop responsive.
 - `Mask R-CNN is incompatible with torch.compile` — do not add it.
 
+## Agent skills
+
+Installable skills live under `web/.agents/skills/` (gitignored; restore with `make -C web skills-restore`). Pinned versions are in [web/skills-lock.json](web/skills-lock.json). Skills apply only to `web/` work — the hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` is frozen.
+
+- **angular-component** — consult when creating or editing Angular components in `web/frontend/`.
+- **threejs-fundamentals** — consult when working on Three.js 3D rendering / mesh visualization in the frontend.
+- **fastapi-templates** — consult when adding or modifying endpoints in `web/backend/`.
+
 ## Pitfalls
 
 - Hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` is largely archived; new work goes in `web/backend/`.
