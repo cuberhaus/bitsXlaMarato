@@ -20,3 +20,6 @@ web/frontend/.angular/
 # Environment
 .venv/
 .env
+
+# Agent skills (installed by `npx skills` — restore via `make -C web skills-restore`)
+web/.agents/skills/
