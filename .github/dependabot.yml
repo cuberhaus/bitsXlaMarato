@@ -1,61 +1,38 @@
 version: 2
 
+multi-ecosystem-groups:
+  weekly-dependency-refresh:
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+
 updates:
   - package-ecosystem: npm
     directory: /web/frontend
-    schedule:
-      interval: weekly
-      day: monday
-    groups:
-      npm:
-        patterns: ['*']
-    commit-message:
-      prefix: chore(deps)
-      include: scope
-    labels:
-      - dependencies
+    multi-ecosystem-group: weekly-dependency-refresh
+    patterns:
+      - '*'
 
   - package-ecosystem: pip
-    directories:
-      - /
-      - /web/backend
-    schedule:
-      interval: weekly
-      day: monday
-    groups:
-      pip:
-        patterns: ['*']
-    commit-message:
-      prefix: chore(deps)
-      include: scope
-    labels:
-      - dependencies
+    directory: /web/backend
+    multi-ecosystem-group: weekly-dependency-refresh
+    patterns:
+      - '*'
 
   - package-ecosystem: docker
     directory: /
-    schedule:
-      interval: weekly
-      day: monday
-    groups:
-      docker:
-        patterns: ['*']
-    commit-message:
-      prefix: chore(docker)
-      include: scope
-    labels:
-      - dependencies
+    multi-ecosystem-group: weekly-dependency-refresh
+    patterns:
+      - '*'
 
   - package-ecosystem: github-actions
     directory: /
-    schedule:
-      interval: weekly
-      day: monday
-    groups:
-      actions:
-        patterns: ['*']
-    commit-message:
-      prefix: chore(ci)
-      include: scope
-    labels:
-      - dependencies
-      - ci
+    multi-ecosystem-group: weekly-dependency-refresh
+    patterns:
+      - '*'
