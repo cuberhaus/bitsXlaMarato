@@ -20,7 +20,9 @@ updates:
       - '*'
 
   - package-ecosystem: pip
-    directory: /web/backend
+    directories:
+      - /
+      - /web/backend
     multi-ecosystem-group: weekly-dependency-refresh
     patterns:
       - '*'
