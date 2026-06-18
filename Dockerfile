@@ -1,5 +1,5 @@
 # Stage 1: Build Angular frontend
-FROM node:22-slim AS frontend
+FROM node:26-slim AS frontend
 
 WORKDIR /app
 COPY web/frontend/package.json web/frontend/package-lock.json ./
@@ -9,7 +9,7 @@ COPY web/frontend/ ./
 RUN npm run build
 
 # Stage 2: CUDA runtime with Python backend
-FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+FROM nvidia/cuda:13.3.0-runtime-ubuntu22.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-dev \
