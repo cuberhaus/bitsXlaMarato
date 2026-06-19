@@ -108,3 +108,9 @@ help:
 	@echo "  make docker-logs      Tail container logs"
 	@echo "  make clean-jobs       Remove processed job data"
 	@echo "  make clean            Remove all generated files"
+
+##@ Understand (knowledge graph)
+
+.PHONY: understand-dashboard
+understand-dashboard: ## Launch the Understand Anything knowledge-graph dashboard (graph dir = repo root)
+	@node -e "require(require('os').homedir()+'/.understand-anything/repo/understand-anything-plugin/packages/dashboard/launch.cjs')"
