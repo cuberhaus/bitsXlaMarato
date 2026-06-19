@@ -23,3 +23,10 @@ web/frontend/.angular/
 
 # Agent skills (installed by `npx skills` — restore via `make -C web skills-restore`)
 web/.agents/skills/
+
+# graphify — track graph.json / GRAPH_REPORT.md / graph.html; ignore machine-specific & regenerable bits
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/manifest.json
+graphify-out/cost.json
+graphify-out/cache/
