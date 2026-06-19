@@ -24,9 +24,12 @@ web/frontend/.angular/
 # Agent skills (installed by `npx skills` — restore via `make -C web skills-restore`)
 web/.agents/skills/
 
-# graphify — track graph.json / GRAPH_REPORT.md / graph.html; ignore machine-specific & regenerable bits
+# graphify: keep graph.json / GRAPH_REPORT.md / graph.html / manifest.json /
+# .graphify_labels.json + the semantic cache (skips LLM re-extraction on re-run);
+# drop the AST cache, stat index, temp files, and machine-local scratch
+graphify-out/cache/ast/
+graphify-out/cache/stat-index.json
+graphify-out/cache/*.tmp
 graphify-out/.graphify_python
 graphify-out/.graphify_root
-graphify-out/manifest.json
 graphify-out/cost.json
-graphify-out/cache/
