@@ -454,8 +454,11 @@ def _bind_session_id(value: str | None) -> Any:
 def _reset_session_id(token: Any) -> None:
     try:
         _SESSION_ID.reset(token)
-    except (LookupError, ValueError):
-        # Token from a different context — safe to ignore.
+    except (LookupError, ValueError, RuntimeError):
+        # Token from a different context, or already reset once — safe to
+        # ignore. Flask's test client can replay teardown for a request
+        # whose token was already reset, which raises RuntimeError
+        # ("<Token> has already been used once").
         pass
 
 
