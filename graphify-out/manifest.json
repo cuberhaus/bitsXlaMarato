@@ -1,0 +1,357 @@
+{
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\3D approximation\\Reconocer aorta y generar 3d.py": {
+    "mtime": 1778767681.160725,
+    "ast_hash": "420cbfeba1e82e7135527438f2309588",
+    "semantic_hash": "420cbfeba1e82e7135527438f2309588"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\coco_eval.py": {
+    "mtime": 1778767681.3561218,
+    "ast_hash": "a66d0f29eec363413effb1a31021df22",
+    "semantic_hash": "a66d0f29eec363413effb1a31021df22"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\coco_utils.py": {
+    "mtime": 1778767681.3571198,
+    "ast_hash": "dd468e0ef94eb262daba0ae80b63dd67",
+    "semantic_hash": "dd468e0ef94eb262daba0ae80b63dd67"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\engine.py": {
+    "mtime": 1778767681.3571198,
+    "ast_hash": "549910b09da5cf5fa3bf46943ea1f164",
+    "semantic_hash": "549910b09da5cf5fa3bf46943ea1f164"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\inference.py": {
+    "mtime": 1778767681.3581164,
+    "ast_hash": "7a9be4c96927f168c2ba9eaad3748b38",
+    "semantic_hash": "7a9be4c96927f168c2ba9eaad3748b38"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\mask.py": {
+    "mtime": 1778767681.3581164,
+    "ast_hash": "7091a3bccf420e39fccd5e393919f43b",
+    "semantic_hash": "7091a3bccf420e39fccd5e393919f43b"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\myMASK.py": {
+    "mtime": 1778767681.3581164,
+    "ast_hash": "8adf52becc7363759d277efac50433ee",
+    "semantic_hash": "8adf52becc7363759d277efac50433ee"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\pederastrians.py": {
+    "mtime": 1778767681.3581164,
+    "ast_hash": "d8c618c25451f90d65b2821204270e3f",
+    "semantic_hash": "d8c618c25451f90d65b2821204270e3f"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\transforms.py": {
+    "mtime": 1778767681.3591232,
+    "ast_hash": "06e82390a36503068116144b6e8c3d7b",
+    "semantic_hash": "06e82390a36503068116144b6e8c3d7b"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\MASKRCNN\\utils.py": {
+    "mtime": 1778767681.3591232,
+    "ast_hash": "990023876b5d62012924c24ee45580f9",
+    "semantic_hash": "990023876b5d62012924c24ee45580f9"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\ImageViewer.py": {
+    "mtime": 1778767682.6202846,
+    "ast_hash": "663ce7c1a5fbabf5ede971ed999562e9",
+    "semantic_hash": "663ce7c1a5fbabf5ede971ed999562e9"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\coco_eval.py": {
+    "mtime": 1778767682.8073132,
+    "ast_hash": "a66d0f29eec363413effb1a31021df22",
+    "semantic_hash": "a66d0f29eec363413effb1a31021df22"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\coco_utils.py": {
+    "mtime": 1778767682.808316,
+    "ast_hash": "dd468e0ef94eb262daba0ae80b63dd67",
+    "semantic_hash": "dd468e0ef94eb262daba0ae80b63dd67"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\engine.py": {
+    "mtime": 1778767682.808316,
+    "ast_hash": "549910b09da5cf5fa3bf46943ea1f164",
+    "semantic_hash": "549910b09da5cf5fa3bf46943ea1f164"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\inference.py": {
+    "mtime": 1778767682.8093133,
+    "ast_hash": "0d4a9d95facfd1b6cf32be92b1625dc4",
+    "semantic_hash": "0d4a9d95facfd1b6cf32be92b1625dc4"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\mask.py": {
+    "mtime": 1778767682.8093133,
+    "ast_hash": "7091a3bccf420e39fccd5e393919f43b",
+    "semantic_hash": "7091a3bccf420e39fccd5e393919f43b"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\myMASK.py": {
+    "mtime": 1778767682.8093133,
+    "ast_hash": "8adf52becc7363759d277efac50433ee",
+    "semantic_hash": "8adf52becc7363759d277efac50433ee"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\pederastrians.py": {
+    "mtime": 1778767682.8103132,
+    "ast_hash": "1405ca2b04d9a9a130d279a91f083d7a",
+    "semantic_hash": "1405ca2b04d9a9a130d279a91f083d7a"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\transforms.py": {
+    "mtime": 1778767682.8103132,
+    "ast_hash": "06e82390a36503068116144b6e8c3d7b",
+    "semantic_hash": "06e82390a36503068116144b6e8c3d7b"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\MASKRCNN\\utils.py": {
+    "mtime": 1778767682.8103132,
+    "ast_hash": "990023876b5d62012924c24ee45580f9",
+    "semantic_hash": "990023876b5d62012924c24ee45580f9"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\distanceFinder.py": {
+    "mtime": 1778767682.8103132,
+    "ast_hash": "29c511e9bebbe92cdb5e9ea089762610",
+    "semantic_hash": "29c511e9bebbe92cdb5e9ea089762610"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\src\\distanceFinder2.py": {
+    "mtime": 1778767682.8113127,
+    "ast_hash": "e61872ae50b72135542759ea7d43cbc5",
+    "semantic_hash": "e61872ae50b72135542759ea7d43cbc5"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\_sentry_obs.py": {
+    "mtime": 1781853638.6409152,
+    "ast_hash": "28fee441c04df8386ca1c98db5e5eb21",
+    "semantic_hash": "28fee441c04df8386ca1c98db5e5eb21"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\app.py": {
+    "mtime": 1778767683.435578,
+    "ast_hash": "9a26896eac13a923823f243dd6b4cc0f",
+    "semantic_hash": "9a26896eac13a923823f243dd6b4cc0f"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\services\\__init__.py": {
+    "mtime": 1778767683.4365702,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\services\\diameter.py": {
+    "mtime": 1778767683.4365702,
+    "ast_hash": "14187323fb8ff4fb5e0bd614e2852d92",
+    "semantic_hash": "14187323fb8ff4fb5e0bd614e2852d92"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\services\\inference.py": {
+    "mtime": 1778767683.4375706,
+    "ast_hash": "9be958eaf9b32792c671b6e88695e52a",
+    "semantic_hash": "9be958eaf9b32792c671b6e88695e52a"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\services\\mesh.py": {
+    "mtime": 1778767683.4375706,
+    "ast_hash": "ca2c43ca78b3a7c4b83a4a66bd914e80",
+    "semantic_hash": "ca2c43ca78b3a7c4b83a4a66bd914e80"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\services\\mesh_improved.py": {
+    "mtime": 1778767683.4375706,
+    "ast_hash": "d665830565e94eb3669f5651f7dee7dd",
+    "semantic_hash": "d665830565e94eb3669f5651f7dee7dd"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\test_app.py": {
+    "mtime": 1778767683.4385798,
+    "ast_hash": "e151f9ebecf0d356686287c060960ca7",
+    "semantic_hash": "e151f9ebecf0d356686287c060960ca7"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\angular.json": {
+    "mtime": 1778767683.4405742,
+    "ast_hash": "122c6acbb7898477aafdb2694eaf9eeb",
+    "semantic_hash": "122c6acbb7898477aafdb2694eaf9eeb"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\package.json": {
+    "mtime": 1781853638.6439173,
+    "ast_hash": "73d61d3e8ad6540827a203b4014f8966",
+    "semantic_hash": "73d61d3e8ad6540827a203b4014f8966"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\proxy.conf.json": {
+    "mtime": 1778767683.44258,
+    "ast_hash": "208d39e664ef1efb6717f3404112eaf1",
+    "semantic_hash": "208d39e664ef1efb6717f3404112eaf1"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\app.config.ts": {
+    "mtime": 1778767683.4433072,
+    "ast_hash": "28fab0dd93fe65b2b70507f7897712f4",
+    "semantic_hash": "28fab0dd93fe65b2b70507f7897712f4"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\app.routes.ts": {
+    "mtime": 1778767683.4453132,
+    "ast_hash": "9e82134f3e41732656270447c4c872fe",
+    "semantic_hash": "9e82134f3e41732656270447c4c872fe"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\app.ts": {
+    "mtime": 1778767683.4453132,
+    "ast_hash": "06d2d9e01fa55c2505f1ab2957036d7c",
+    "semantic_hash": "06d2d9e01fa55c2505f1ab2957036d7c"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\diameter\\diameter.ts": {
+    "mtime": 1778767683.4473112,
+    "ast_hash": "c0b45094f5738c1ac8d3cf48d0b3fbd0",
+    "semantic_hash": "c0b45094f5738c1ac8d3cf48d0b3fbd0"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\frame-viewer\\frame-viewer.ts": {
+    "mtime": 1778767683.4478424,
+    "ast_hash": "9856675a9569e1db6ed49f9a42309a78",
+    "semantic_hash": "9856675a9569e1db6ed49f9a42309a78"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\job-status\\job-status.ts": {
+    "mtime": 1778767683.4498467,
+    "ast_hash": "9875e7b30b424dbd63f7337bdb141502",
+    "semantic_hash": "9875e7b30b424dbd63f7337bdb141502"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\three-viewer\\three-viewer.ts": {
+    "mtime": 1778767683.4508483,
+    "ast_hash": "368ae25304580648fe1c1797947d3bca",
+    "semantic_hash": "368ae25304580648fe1c1797947d3bca"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\upload\\upload.ts": {
+    "mtime": 1778767683.4518487,
+    "ast_hash": "496093b14aee21f1cab0cd690ba36f6a",
+    "semantic_hash": "496093b14aee21f1cab0cd690ba36f6a"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\services\\api.ts": {
+    "mtime": 1778767683.4528482,
+    "ast_hash": "3d33d4418c9dec5d0cb1034028af99cf",
+    "semantic_hash": "3d33d4418c9dec5d0cb1034028af99cf"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\main.ts": {
+    "mtime": 1778767683.4538481,
+    "ast_hash": "74ba0797b87c9c5abdbfdce319a3bef1",
+    "semantic_hash": "74ba0797b87c9c5abdbfdce319a3bef1"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\tsconfig.app.json": {
+    "mtime": 1778767683.4538481,
+    "ast_hash": "67a3f20f3c9369570c8dc70e3d5bb7ce",
+    "semantic_hash": "67a3f20f3c9369570c8dc70e3d5bb7ce"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\tsconfig.json": {
+    "mtime": 1778767683.4548485,
+    "ast_hash": "75dc23f3aeb5a74dea1973475a478278",
+    "semantic_hash": "75dc23f3aeb5a74dea1973475a478278"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\tsconfig.spec.json": {
+    "mtime": 1778767683.4548485,
+    "ast_hash": "9261a8f9db3b2c991df0e6f9d51828b1",
+    "semantic_hash": "9261a8f9db3b2c991df0e6f9d51828b1"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\skills-lock.json": {
+    "mtime": 1781034310.8748727,
+    "ast_hash": "68b268b52ce33837f48ba69f1f8fcf53",
+    "semantic_hash": "68b268b52ce33837f48ba69f1f8fcf53"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.cursor\\plans\\improved_3d_mesh_comparison_f1d71e7d.plan.md": {
+    "mtime": 1778767681.1559973,
+    "ast_hash": "cead039033077882782ba042f71e543d",
+    "semantic_hash": "cead039033077882782ba042f71e543d"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.cursor\\plans\\max_gpu_utilization_pipeline_37e3b06e.plan.md": {
+    "mtime": 1778767681.1565764,
+    "ast_hash": "47137ae4c58a7eb95f986343269b558e",
+    "semantic_hash": "47137ae4c58a7eb95f986343269b558e"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.github\\FUNDING.yml": {
+    "mtime": 1781796432.3306463,
+    "ast_hash": "d8306e7650e06c355518d4621d86d4c7",
+    "semantic_hash": "d8306e7650e06c355518d4621d86d4c7"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.github\\dependabot.yml": {
+    "mtime": 1781853638.6359162,
+    "ast_hash": "cde45e5f87467ab146ab084b42a706a6",
+    "semantic_hash": "cde45e5f87467ab146ab084b42a706a6"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.github\\pull_request_template.md": {
+    "mtime": 1781037175.3213248,
+    "ast_hash": "26590e1ed9841364e0f4806effbda8b6",
+    "semantic_hash": "26590e1ed9841364e0f4806effbda8b6"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.github\\workflows\\skills-update.yml": {
+    "mtime": 1781853638.6369164,
+    "ast_hash": "e8d9c8dae8672fe1e105b0722285dec6",
+    "semantic_hash": "e8d9c8dae8672fe1e105b0722285dec6"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\.github\\workflows\\test.yml": {
+    "mtime": 1781853638.6379168,
+    "ast_hash": "1ebbb6e25cbd108f19207f7a74bfc031",
+    "semantic_hash": "1ebbb6e25cbd108f19207f7a74bfc031"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\AGENTS.md": {
+    "mtime": 1781035283.6316998,
+    "ast_hash": "9eabd973b2872c7234cd9622242e1450",
+    "semantic_hash": "9eabd973b2872c7234cd9622242e1450"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\PERFORMANCE.md": {
+    "mtime": 1778767681.3601217,
+    "ast_hash": "241eae4fff318d207a76cffa21da870d",
+    "semantic_hash": "241eae4fff318d207a76cffa21da870d"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\README.md": {
+    "mtime": 1778767681.3601217,
+    "ast_hash": "f586410309f37030671122cb508a6bc8",
+    "semantic_hash": "f586410309f37030671122cb508a6bc8"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\SECURITY.md": {
+    "mtime": 1778767681.3601217,
+    "ast_hash": "36c6a28a6b4bda483ff8b3f538e694ec",
+    "semantic_hash": "36c6a28a6b4bda483ff8b3f538e694ec"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\docker-compose.yml": {
+    "mtime": 1778767681.3661137,
+    "ast_hash": "40acd0e665e11d6c357978153172941d",
+    "semantic_hash": "40acd0e665e11d6c357978153172941d"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\frames\\pol.txt": {
+    "mtime": 1778767682.3871703,
+    "ast_hash": "ffea6765d69ce1b011f4688d3a43588c",
+    "semantic_hash": "ffea6765d69ce1b011f4688d3a43588c"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\requirements.txt": {
+    "mtime": 1781853638.6399171,
+    "ast_hash": "03ed19fd8a51c24f3773452126d056ce",
+    "semantic_hash": "03ed19fd8a51c24f3773452126d056ce"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\backend\\requirements.txt": {
+    "mtime": 1781853638.6409152,
+    "ast_hash": "eec60ade7100812269859e1001511b13",
+    "semantic_hash": "eec60ade7100812269859e1001511b13"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\README.md": {
+    "mtime": 1778767683.4405742,
+    "ast_hash": "9af38ae78c9c296da786b39128e3d7b0",
+    "semantic_hash": "9af38ae78c9c296da786b39128e3d7b0"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\app.html": {
+    "mtime": 1778767683.4443157,
+    "ast_hash": "c077f4a74c156abd533c29b65241141a",
+    "semantic_hash": "c077f4a74c156abd533c29b65241141a"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\diameter\\diameter.html": {
+    "mtime": 1778767683.4463112,
+    "ast_hash": "512b28bc74dd25091c1458e7ba4fe083",
+    "semantic_hash": "512b28bc74dd25091c1458e7ba4fe083"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\frame-viewer\\frame-viewer.html": {
+    "mtime": 1778767683.4478424,
+    "ast_hash": "5bd515c63aa070cca53a67c8cfc02bd9",
+    "semantic_hash": "5bd515c63aa070cca53a67c8cfc02bd9"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\job-status\\job-status.html": {
+    "mtime": 1778767683.448846,
+    "ast_hash": "d0f6265d24adc28cc8d57e070f542e86",
+    "semantic_hash": "d0f6265d24adc28cc8d57e070f542e86"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\three-viewer\\three-viewer.html": {
+    "mtime": 1778767683.4508483,
+    "ast_hash": "9827e504b51434dbe97dce6d66cf832f",
+    "semantic_hash": "9827e504b51434dbe97dce6d66cf832f"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\app\\components\\upload\\upload.html": {
+    "mtime": 1778767683.4518487,
+    "ast_hash": "e45bfe7c9e6c1fb6d4a6a18a85d3f98b",
+    "semantic_hash": "e45bfe7c9e6c1fb6d4a6a18a85d3f98b"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\web\\frontend\\src\\index.html": {
+    "mtime": 1778767683.4528482,
+    "ast_hash": "ee17600afdaf3ea22312106f6e32a58f",
+    "semantic_hash": "ee17600afdaf3ea22312106f6e32a58f"
+  },
+  "C:\\Users\\lara\\cuberhaus\\bitsXlaMarato\\docs\\Challenge_1_V2.pdf": {
+    "mtime": 1778767681.3705976,
+    "ast_hash": "5eaaebf33a74a24b5978db5b49fea1c7",
+    "semantic_hash": "5eaaebf33a74a24b5978db5b49fea1c7"
+  }
+}
