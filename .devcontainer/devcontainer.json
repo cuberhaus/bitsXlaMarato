@@ -1,0 +1,20 @@
+{
+  "//": "cuberhaus reproducible dev environment (python). Managed source: cuberhaus-workspace/assets/devcontainers/python. Applied per repo by scripts/apply-devcontainers.ps1.",
+  "name": "cuberhaus python",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "bash -lc 'if [ -f skills-lock.json ]; then make skills-restore || true; fi; if [ -f requirements.txt ]; then pip install -r requirements.txt || true; elif [ -f pyproject.toml ]; then pip install -e . || pip install . || true; fi'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff"
+      ]
+    }
+  }
+}
