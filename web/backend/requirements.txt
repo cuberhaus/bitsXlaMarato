@@ -4,7 +4,7 @@ torch==2.12.1
 torchvision==0.27.1
 opencv-python==4.13.0.92
 meshlib==3.1.2.192
-Pillow==12.2.0
+Pillow==12.3.0
 numpy==2.4.6
 python-multipart==0.0.32
 scikit-image==0.26.0
