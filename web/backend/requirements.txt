@@ -2,7 +2,7 @@ fastapi==0.137.2
 uvicorn[standard]==0.49.0
 torch==2.12.1
 torchvision==0.27.1
-opencv-python==4.13.0.92
+opencv-python==5.0.0.93
 meshlib==3.1.2.192
 Pillow==12.2.0
 numpy==2.4.6
