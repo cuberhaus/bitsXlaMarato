@@ -5,7 +5,7 @@ fastapi==0.137.2
 httpx==0.28.1
 numpy==2.4.6
 opencv-python-headless==4.13.0.92
-Pillow==12.2.0
+Pillow==12.3.0
 pytest==8.3.5
 python-multipart==0.0.32
 torch==2.12.1+cpu
