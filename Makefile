@@ -11,7 +11,7 @@ VENV          = .venv
 
 # ── Setup ──────────────────────────────────────────────
 
-.PHONY: install install-backend install-frontend venv
+.PHONY: install install-backend install-frontend install-test-backend venv
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -21,6 +21,9 @@ install: install-backend install-frontend
 
 install-backend:
 	$(PIP) install -r $(BACKEND_DIR)/requirements.txt
+
+install-test-backend:
+	$(PIP) install -r $(BACKEND_DIR)/requirements-test.txt
 
 install-frontend:
 	cd $(FRONTEND_DIR) && $(NPM) install
@@ -45,7 +48,10 @@ dev: install
 
 # ── Build ──────────────────────────────────────────────
 
-.PHONY: build build-frontend
+.PHONY: build build-frontend test-backend
+
+test-backend:
+	cd $(BACKEND_DIR) && $(PYTHON) -m pytest test_app.py -v
 
 build-frontend:
 	cd $(FRONTEND_DIR) && $(NPM) run build
@@ -100,6 +106,8 @@ help:
 	@echo "  make dev              Install deps + launch backend (:8001) and frontend (:4200)"
 	@echo "  make dev-backend      Start FastAPI backend only on :8001"
 	@echo "  make dev-frontend     Start Angular dev server only on :4200"
+	@echo "  make install-test-backend  Install pinned CPU-only backend test dependencies"
+	@echo "  make test-backend     Run FastAPI endpoint tests without a GPU or model weights"
 	@echo "  make build            Build Angular frontend for production"
 	@echo "  make serve            Build frontend + start production server on :8001"
 	@echo "  make docker-build     Build Docker image (includes GPU + model files)"
