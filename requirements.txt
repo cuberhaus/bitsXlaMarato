@@ -5,6 +5,6 @@ Pillow==12.2.0
 numpy==2.4.6
 matplotlib==3.11.0
 opencv-python==4.6.0.66
-torch==2.12.1
+torch==2.13.0
 torchvision==0.27.1
 meshlib==3.1.2.192
