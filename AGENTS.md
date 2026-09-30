@@ -33,7 +33,7 @@ No automated test suite exists.
 
 ## Agent skills
 
-Installable skills live under `web/.agents/skills/` (gitignored; restore with `make -C web skills-restore`). Pinned versions are in [web/skills-lock.json](web/skills-lock.json). Skills apply only to `web/` work — the hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` is frozen.
+Installable skills live under `web/.agents/skills/` (gitignored; restore with `make -C web skills-restore`). Pinned versions are in [web/skills-lock.json](web/skills-lock.json). Skills apply only to `web/` work — the hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` is not covered by them.
 
 - **angular-component** — consult when creating or editing Angular components in `web/frontend/`.
 - **threejs-fundamentals** — consult when working on Three.js 3D rendering / mesh visualization in the frontend.
@@ -41,7 +41,7 @@ Installable skills live under `web/.agents/skills/` (gitignored; restore with `m
 
 ## Pitfalls
 
-- Hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` is largely archived; new work goes in `web/backend/`.
+- Hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` predates the web app; the app's backend lives in `web/backend/`.
 - Root [requirements.txt](requirements.txt) is **not** what the app uses — it pins `torchvision==0.14.1` against `torch==2.8.0` (incompatible) and lists `opencv-python` twice. Treat it as legacy.
 - A CUDA-capable GPU is expected for real inference; CPU fallback will be very slow.
 - `frames/`, `videos/`, and `models/` can be large; avoid bulk-reading them with tools.
