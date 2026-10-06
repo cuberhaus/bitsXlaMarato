@@ -15,7 +15,7 @@ Award-winning project from the 2022 BitsxlaMarató (TV3) hackathon "per la salut
 
 ## Build and Test
 
-Use the [Makefile](Makefile), not the root `requirements.txt` (which is stale and has conflicting `opencv-python` versions).
+Use the [Makefile](Makefile), not the root [requirements.txt](requirements.txt): it is legacy, pinning `torchvision==0.14.1` against `torch==2.8.0` (incompatible) and listing `opencv-python` twice (conflicting versions).
 
 - `make dev` — install deps + run backend on `:8001` and Angular on `:4200`.
 - `make dev-backend` / `make dev-frontend` — run one side only.
@@ -29,7 +29,7 @@ No automated test suite exists.
 
 - Backend uses `torch.inference_mode()` + AMP `float16` + batch-16 pipelined I/O on GPU; do not regress this (see [PERFORMANCE.md](PERFORMANCE.md)).
 - Long jobs (mesh generation, inference) must be offloaded via `asyncio.to_thread()` to keep the FastAPI event loop responsive.
-- `Mask R-CNN is incompatible with torch.compile` — do not add it.
+- Mask R-CNN is incompatible with `torch.compile` — do not add it.
 
 ## Agent skills
 
@@ -41,8 +41,6 @@ Installable skills live under `web/.agents/skills/` (gitignored; restore with `m
 
 ## Pitfalls
 
-- Hackathon-era code in `src/`, `MASKRCNN/`, and `3D approximation/` predates the web app; the app's backend lives in `web/backend/`.
-- Root [requirements.txt](requirements.txt) is **not** what the app uses — it pins `torchvision==0.14.1` against `torch==2.8.0` (incompatible) and lists `opencv-python` twice. Treat it as legacy.
 - A CUDA-capable GPU is expected for real inference; CPU fallback will be very slow.
 - `frames/`, `videos/`, and `models/` can be large; avoid bulk-reading them with tools.
 - Folder name `3D approximation/` contains a space — quote it in shell commands.
